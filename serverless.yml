@@ -1,0 +1,84 @@
+service: myid-lambda
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: eu-west-1
+  profile: dmitry-aws
+  runtime: nodejs14.x
+  environment:
+    TABLE_NAME: ${self:custom.usersTableName}
+    KEY_BUCKET_NAME: ${self:custom.keysBucketName}
+    REGION: ${self:provider.region}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:putItem
+            - dynamodb:getItem
+          Resource: ${self:custom.usersTableArn}
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+          Resource:
+            Fn::Join:
+              - '/'
+              - - ${self:custom.keysBucketArn}
+                - '*'
+
+custom:
+  usersTableName: ${self:service}-users
+  usersTableArn:
+    Fn::GetAtt: [usersTable, Arn]
+  keysBucketName: ${self:service}-keys
+  keysBucketArn:
+    Fn::GetAtt: [keysBucket, Arn]
+
+functions:
+  getJwks:
+    handler: getJwks.handler
+    events:
+      - http:
+          method: get
+          path: '.well-known/jwks.json'
+  register:
+    handler: register.handler
+    events:
+      - http:
+          method: post
+          path: register
+  login:
+    handler: login.handler
+    events:
+      - http:
+          method: post
+          path: login
+  refresh:
+    handler: refresh.handler
+    events:
+      - http:
+          method: post
+          path: refresh
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.usersTableName}
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    keysBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.keysBucketName}
+        AccessControl: Private
