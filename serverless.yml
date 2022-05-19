@@ -59,7 +59,7 @@ functions:
     handler: refresh.handler
     events:
       - http:
-          method: post
+          method: get
           path: refresh
 
 resources:

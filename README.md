@@ -15,6 +15,26 @@ authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
 
 Once stack is deployed the _keypair.pem_ and _jwks.json_ needs to be uploaded to the s3 bucket.
 
+## How to deploy / remove
+
+Deploy whole stack
+
+```
+sls deploy
+```
+
+Remove whole stack
+
+```
+sls remove
+```
+
+Deploy a single function (register)
+
+```
+sls deploy function -f register
+```
+
 # Serverless Framework AWS NodeJS Example
 
 This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework. The deployed function does not include any event definitions as well as any kind of persistence (database). For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about configuration of specific `events`, please refer to our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).

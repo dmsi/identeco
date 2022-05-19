@@ -12,6 +12,7 @@ function getStatusCode(err) {
   return err.status || 500
 }
 
+// https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/s3-example-creating-buckets.html
 async function readS3File(client, bucket, key) {
   const streamToString = (stream) =>
     new Promise((resolve, reject) => {

@@ -15,7 +15,7 @@ module.exports.handler = async (event) => {
 
     // Check request parameters
     if (typeof username !== 'string' || typeof password !== 'string') {
-      throw helpers.BackendError({
+      throw new helpers.BackendError({
         message: 'Missing username or password',
         status: 400,
       })
