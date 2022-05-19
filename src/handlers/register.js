@@ -2,7 +2,7 @@
 const { DynamoDB } = require('@aws-sdk/client-dynamodb')
 const { marshall } = require('@aws-sdk/util-dynamodb')
 const bcrypt = require('bcryptjs')
-const helpers = require('./helpers')
+const helpers = require('../helpers')
 
 const ddb = new DynamoDB({ region: process.env.REGION })
 

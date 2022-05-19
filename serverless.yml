@@ -38,25 +38,25 @@ custom:
 
 functions:
   getJwks:
-    handler: getJwks.handler
+    handler: src/handlers/getJwks.handler
     events:
       - http:
           method: get
           path: '.well-known/jwks.json'
   register:
-    handler: register.handler
+    handler: src/handlers/register.handler
     events:
       - http:
           method: post
           path: register
   login:
-    handler: login.handler
+    handler: src/handlers/login.handler
     events:
       - http:
           method: post
           path: login
   refresh:
-    handler: refresh.handler
+    handler: src/handlers/refresh.handler
     events:
       - http:
           method: get

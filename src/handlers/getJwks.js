@@ -1,6 +1,6 @@
 'use strict'
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3')
-const helpers = require('./helpers')
+const helpers = require('../helpers')
 
 const s3 = new S3Client({ region: process.env.REGION })
 

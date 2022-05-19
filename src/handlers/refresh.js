@@ -2,7 +2,7 @@
 const jwkToPem = require('jwk-to-pem')
 const { S3Client } = require('@aws-sdk/client-s3')
 const jwt = require('jsonwebtoken')
-const helpers = require('./helpers')
+const helpers = require('../helpers')
 
 const s3 = new S3Client({ region: process.env.REGION })
 

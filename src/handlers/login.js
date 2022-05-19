@@ -4,7 +4,7 @@ const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb')
 const { S3Client } = require('@aws-sdk/client-s3')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-const helpers = require('./helpers')
+const helpers = require('../helpers')
 
 const ddb = new DynamoDB({ region: process.env.REGION })
 const s3 = new S3Client({ region: process.env.REGION })
@@ -53,7 +53,6 @@ module.exports.handler = async (event) => {
       expiresIn: '60m',
       keyid: jwks.keys[0].kid,
     }
-
     const access_token = jwt.sign(claims, keypair_pem, options)
     const refresh_token = jwt.sign(claims, keypair_pem, {
       ...options,
