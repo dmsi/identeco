@@ -1,3 +1,4 @@
+from jwcrypto import jwk, jwt
 import requests
 import random
 import string
@@ -8,10 +9,11 @@ class State:
         self.username = randomString()
         self.password = randomString()
         self.refresh_token = None
+        self.jwks = None
 
 
 def getEndpoint(path):
-    return f"https://tsrb6qsv65.execute-api.eu-west-1.amazonaws.com/dev{path}"
+    return f"https://hfbez7dpci.execute-api.eu-west-1.amazonaws.com/dev{path}"
 
 
 def randomString():
@@ -35,6 +37,7 @@ def testJwks():
 
     body = res.json()
     print("jwks.json:", body)
+    state.jwks = body
 
     print("*** PASSED ***")
     print()
@@ -92,6 +95,10 @@ def testLogin(should_pass):
         print("tokens:", body)
         state.refresh_token = body["refresh_token"]
 
+        # Verify access_token
+        key = jwk.JWK(**state.jwks["keys"][0])
+        jwt.JWT(key = key, jwt = body["access_token"])
+
     print("*** PASSED ***")
     print()
 
@@ -115,6 +122,10 @@ def testRefresh():
 
     body = res.json()
     print("tokens:", body)
+
+    # Verify access_token
+    key = jwk.JWK(**state.jwks["keys"][0])
+    jwt.JWT(key = key, jwt = body["access_token"])
 
     print("*** PASSED ***")
     print()

@@ -16,12 +16,13 @@ provider:
       statements:
         - Effect: Allow
           Action:
-            - dynamodb:putItem
-            - dynamodb:getItem
+            - dynamodb:PutItem
+            - dynamodb:GetItem
           Resource: ${self:custom.usersTableArn}
         - Effect: Allow
           Action:
             - s3:GetObject
+            - s3:PutObject
           Resource:
             Fn::Join:
               - '/'
@@ -61,6 +62,12 @@ functions:
       - http:
           method: get
           path: refresh
+  rotateKeys:
+    handler: src/handlers/rotateKeys.handler
+    events:
+      - http:
+          method: get
+          path: rotate
 
 resources:
   Resources:

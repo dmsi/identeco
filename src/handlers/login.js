@@ -16,7 +16,7 @@ module.exports.handler = async (event) => {
     // Check request parameters
     if (typeof username !== 'string' || typeof password !== 'string') {
       throw new helpers.BackendError({
-        message: 'Missing username or password',
+        message: 'missing username or password',
         status: 400,
       })
     }
@@ -31,7 +31,10 @@ module.exports.handler = async (event) => {
 
     const pwd_ok = await bcrypt.compare(password, user.password)
     if (pwd_ok !== true) {
-      throw Error(`invalid login or password for ${username}`)
+      throw new helpers.BackendError({
+        message: `invalid login or password for ${username}`,
+        status: 401,
+      })
     }
 
     // Read keys

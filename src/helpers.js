@@ -1,5 +1,9 @@
 'use strict'
-const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3')
+const {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+} = require('@aws-sdk/client-s3')
 
 class BackendError extends Error {
   constructor(e) {
@@ -31,8 +35,21 @@ async function readS3File(client, bucket, key) {
   return await streamToString(data.Body)
 }
 
+async function writeS3File(client, bucket, key, body) {
+  const data = await client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: body,
+    })
+  )
+  console.log('data', data)
+  return data
+}
+
 module.exports = {
   readS3File,
+  writeS3File,
   getStatusCode,
   BackendError,
 }
