@@ -6,6 +6,7 @@ import requests
 import random
 import string
 import traceback
+import os
 
 
 class State:
@@ -17,7 +18,7 @@ class State:
 
 
 def getEndpoint(path):
-    return f"https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev{path}"
+    return f"{os.environ['IDENTECO_API_ADDRESS']}{path}"
 
 
 def randomString():

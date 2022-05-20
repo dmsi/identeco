@@ -74,6 +74,32 @@ functions:
 Monitor all your API routes with Serverless Console: run "serverless --console"
 ```
 
+### Run python test
+
+> **Note** `python3.9` with module `venv` is required
+
+The following snippet can be used in order to run the tests in `bash` environment
+
+```bash
+cd ./test
+
+# Setup pyton venv and activate it
+python -m venv myenv
+
+# Setup python dependencies
+source myenv/bin/activate
+pip install -r requirements.txt
+
+# Run the test
+export IDENTECO_API_ADDRESS=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev
+python apitest.py
+```
+
+> **Note** `IDENTECO_API_ADDRESS` env variable must be set prior running the test.
+> The value must be taken from the `serverless deploy` output including stage (i.e. `/dev`)
+> but **excluding** the tailing `/` symbol.
+> For example: `export IDENTECO_API_ADDRESS=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev`
+
 ## Remove
 
 Remove whole stack
