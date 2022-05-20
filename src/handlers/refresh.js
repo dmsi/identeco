@@ -10,26 +10,26 @@ const s3 = new S3Client({ region: process.env.REGION })
 function verifyToken(jwks, token) {
   const { kid, alg } = jwt.decode(token, { complete: true }).header
   const jwk = jwks.keys.find((j) => j.kid === kid)
-  const decoded_token = jwt.verify(token, jwkToPem(jwk), {
+  const decodedToken = jwt.verify(token, jwkToPem(jwk), {
     algorithms: [alg],
   })
 
-  return decoded_token
+  return decodedToken
 }
 
 module.exports.handler = async (event) => {
   try {
-    const auth_hdr = event.headers['Authorization']
-    if (!auth_hdr) {
+    const auth = event.headers['Authorization']
+    if (!auth) {
       throw new helpers.BackendError({
         message: 'missing authorization token',
         status: 403,
       })
     }
-    const refresh_token = auth_hdr.split(' ')[1]
+    const refreshToken = auth.split(' ')[1]
 
     // Read keys
-    const keypair_pem = await helpers.readS3File(
+    const privateKeyPem = await helpers.readS3File(
       s3,
       process.env.BUCKET_NAME,
       process.env.PRIVATE_KEY_NAME
@@ -43,18 +43,18 @@ module.exports.handler = async (event) => {
     )
 
     // Verify refresh token's signature
-    const decoded_token = verifyToken(jwks, refresh_token)
+    const decodedToken = verifyToken(jwks, refreshToken)
 
     // Issue new access token
     const claims = {
-      username: decoded_token.username,
+      username: decodedToken.username,
     }
     const options = {
       algorithm: 'RS256',
       expiresIn: '60m',
       keyid: jwks.keys[0].kid,
     }
-    const access_token = jwt.sign(claims, keypair_pem, options)
+    const accessToken = jwt.sign(claims, privateKeyPem, options)
 
     // Send the response
     return {
@@ -63,7 +63,7 @@ module.exports.handler = async (event) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        access_token,
+        accessToken,
       }),
     }
   } catch (err) {

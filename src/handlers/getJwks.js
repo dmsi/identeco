@@ -8,8 +8,8 @@ module.exports.handler = async (event) => {
   try {
     const jwks = await helpers.readS3File(
       s3,
-      process.env.KEY_BUCKET_NAME,
-      'jwks.json'
+      process.env.BUCKET_NAME,
+      process.env.JWKS_JSON_NAME
     )
 
     return {

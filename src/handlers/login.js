@@ -29,8 +29,8 @@ module.exports.handler = async (event) => {
     const { Item } = await ddb.getItem(params)
     const user = unmarshall(Item)
 
-    const pwd_ok = await bcrypt.compare(password, user.password)
-    if (pwd_ok !== true) {
+    const pwdOk = await bcrypt.compare(password, user.password)
+    if (pwdOk !== true) {
       throw new helpers.BackendError({
         message: `invalid login or password for ${username}`,
         status: 401,
@@ -38,7 +38,7 @@ module.exports.handler = async (event) => {
     }
 
     // Read keys
-    const keypair_pem = await helpers.readS3File(
+    const privateKeyPem = await helpers.readS3File(
       s3,
       process.env.BUCKET_NAME,
       process.env.PRIVATE_KEY_NAME
@@ -60,8 +60,8 @@ module.exports.handler = async (event) => {
       expiresIn: '60m',
       keyid: jwks.keys[0].kid,
     }
-    const access_token = jwt.sign(claims, keypair_pem, options)
-    const refresh_token = jwt.sign(claims, keypair_pem, {
+    const accessToken = jwt.sign(claims, privateKeyPem, options)
+    const refreshToken = jwt.sign(claims, privateKeyPem, {
       ...options,
       expiresIn: '10d',
     })
@@ -73,8 +73,8 @@ module.exports.handler = async (event) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        access_token,
-        refresh_token,
+        accessToken,
+        refreshToken,
       }),
     }
   } catch (err) {

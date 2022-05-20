@@ -25,6 +25,13 @@ Deploy a single function (register)
 sls deploy function -f register
 ```
 
+# Features
+
+- Registraion of username/password
+- Using assymetric RS256 JWK algorithm
+- Automatic keys rotation
+- In jwks.json keeps the previous public key as well
+
 # Known Issues
 
 - In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
@@ -37,4 +44,4 @@ sls deploy function -f register
 [x] Add dependencies for python tests
 [x] Replace API /rotate to cron-like scheduled event (CloudWatch?)
 [] Replace require to EC6-style import
-[] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
+[x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)

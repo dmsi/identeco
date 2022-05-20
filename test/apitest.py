@@ -108,10 +108,10 @@ def testLogin(should_pass):
     if should_pass:
         body = res.json()
         print("tokens:", body)
-        state.refresh_token = body["refresh_token"]
+        state.refresh_token = body["refreshToken"]
 
-        verifyToken("access_token", body["access_token"])
-        verifyToken("refresh_token", body["refresh_token"])
+        verifyToken("accessToken", body["accessToken"])
+        verifyToken("refreshToken", body["refreshToken"])
 
 
 
@@ -140,7 +140,7 @@ def testRefresh():
     print("tokens:", body)
 
     # Verify access_token
-    verifyToken("access_token", body["access_token"])
+    verifyToken("accessToken", body["accessToken"])
 
     print("*** PASSED ***")
     print()

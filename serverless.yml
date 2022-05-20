@@ -9,7 +9,6 @@ provider:
   runtime: nodejs14.x
   environment:
     TABLE_NAME: ${self:custom.usersTableName}
-    KEY_BUCKET_NAME: ${self:custom.keysBucketName}
     BUCKET_NAME: ${self:custom.keysBucketName}
     REGION: ${self:provider.region}
     PRIVATE_KEY_NAME: 'keypair.pem'
