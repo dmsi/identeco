@@ -32,7 +32,7 @@ def gethttpStatus(res):
 def verifyToken(token_name, token):
     # Lookup jwk by token's kid
     header = get_unverified_header(token)
-    jwk = next((k for k in state.jwks["keys"] if k["kid"] == header["kid"]), None)
+    jwk = next(filter(lambda k: k["kid"] == header["kid"], state.jwks["keys"]))
 
     # Verify token
     JWT(key = JWK(**jwk), jwt = token)

@@ -11,7 +11,7 @@
   },
   "name": "identeco",
   "type": "module",
-  "description": "Minimalist authentication and authorization provider implemented using AWS lambda.",
+  "description": "Minimalist authentication and authorization provider implemented using AWS Lambda.",
   "version": "0.1.0",
   "main": "index.js",
   "directories": {
@@ -25,10 +25,7 @@
     "type": "git",
     "url": "git+https://github.com/dmsi/identeco.git"
   },
-  "keywords": [
-    "authentication",
-    "authorization"
-  ],
+  "keywords": ["authentication", "authorization"],
   "author": "Dmitry Simakov",
   "license": "MIT",
   "bugs": {

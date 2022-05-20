@@ -131,7 +131,6 @@ serverless deploy function -f register
 # Known Issues and Limitations
 
 - In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
-- _keypair.pem_ and _jwks.json_ needs to be pre-created and manually uploaded to s3 bucket
 - Supports only authentication (username claim).
 - No email confirmation
 - No OpenID support
