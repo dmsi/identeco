@@ -1,7 +1,11 @@
-from jwcrypto import jwk, jwt
+# Using jwcrypto for verification and jwt for decoding JWT headers
+from jwcrypto.jwk import JWK
+from jwcrypto.jwt import JWT
+from jwt import get_unverified_header
 import requests
 import random
 import string
+import traceback
 
 
 class State:
@@ -17,11 +21,22 @@ def getEndpoint(path):
 
 
 def randomString():
-    return ''.join(random.choices(string.ascii_lowercase + string.ascii_uppercase, k=10))
+    return ''.join(random.choices(string.ascii_letters, k = 10))
 
 
 def gethttpStatus(res):
     return f"HTTP {res.status_code} {res.reason}"
+
+
+def verifyToken(token_name, token):
+    # Lookup jwk by token's kid
+    header = get_unverified_header(token)
+    jwk = next((k for k in state.jwks["keys"] if k["kid"] == header["kid"]), None)
+
+    # Verify token
+    JWT(key = JWK(**jwk), jwt = token)
+
+    print(f"{token_name}: verified")
 
 
 def testJwks():
@@ -95,9 +110,10 @@ def testLogin(should_pass):
         print("tokens:", body)
         state.refresh_token = body["refresh_token"]
 
-        # Verify access_token
-        key = jwk.JWK(**state.jwks["keys"][0])
-        jwt.JWT(key = key, jwt = body["access_token"])
+        verifyToken("access_token", body["access_token"])
+        verifyToken("refresh_token", body["refresh_token"])
+
+
 
     print("*** PASSED ***")
     print()
@@ -124,8 +140,7 @@ def testRefresh():
     print("tokens:", body)
 
     # Verify access_token
-    key = jwk.JWK(**state.jwks["keys"][0])
-    jwt.JWT(key = key, jwt = body["access_token"])
+    verifyToken("access_token", body["access_token"])
 
     print("*** PASSED ***")
     print()
@@ -151,6 +166,7 @@ def main():
 
     except Exception as e:
         print("ERROR :::", e)
+        traceback.print_exc()
         print("****** FAILED *********")
 
 

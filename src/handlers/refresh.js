@@ -1,4 +1,5 @@
 'use strict'
+
 const jwkToPem = require('jwk-to-pem')
 const { S3Client } = require('@aws-sdk/client-s3')
 const jwt = require('jsonwebtoken')
@@ -6,11 +7,21 @@ const helpers = require('../helpers')
 
 const s3 = new S3Client({ region: process.env.REGION })
 
+function verifyToken(jwks, token) {
+  const { kid, alg } = jwt.decode(token, { complete: true }).header
+  const jwk = jwks.keys.find((j) => j.kid === kid)
+  const decoded_token = jwt.verify(token, jwkToPem(jwk), {
+    algorithms: [alg],
+  })
+
+  return decoded_token
+}
+
 module.exports.handler = async (event) => {
   try {
     const auth_hdr = event.headers['Authorization']
     if (!auth_hdr) {
-      throw helpers.BackendError({
+      throw new helpers.BackendError({
         message: 'missing authorization token',
         status: 403,
       })
@@ -20,17 +31,19 @@ module.exports.handler = async (event) => {
     // Read keys
     const keypair_pem = await helpers.readS3File(
       s3,
-      process.env.KEY_BUCKET_NAME,
-      'keypair.pem'
+      process.env.BUCKET_NAME,
+      process.env.PRIVATE_KEY_NAME
     )
     const jwks = JSON.parse(
-      await helpers.readS3File(s3, process.env.KEY_BUCKET_NAME, 'jwks.json')
+      await helpers.readS3File(
+        s3,
+        process.env.BUCKET_NAME,
+        process.env.JWKS_JSON_NAME
+      )
     )
 
     // Verify refresh token's signature
-    const decoded_token = jwt.verify(refresh_token, jwkToPem(jwks.keys[0]), {
-      algorithms: ['RS256'],
-    })
+    const decoded_token = verifyToken(jwks, refresh_token)
 
     // Issue new access token
     const claims = {

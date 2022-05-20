@@ -36,15 +36,13 @@ async function readS3File(client, bucket, key) {
 }
 
 async function writeS3File(client, bucket, key, body) {
-  const data = await client.send(
+  await client.send(
     new PutObjectCommand({
       Bucket: bucket,
       Key: key,
       Body: body,
     })
   )
-  console.log('data', data)
-  return data
 }
 
 module.exports = {

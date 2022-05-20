@@ -40,11 +40,15 @@ module.exports.handler = async (event) => {
     // Read keys
     const keypair_pem = await helpers.readS3File(
       s3,
-      process.env.KEY_BUCKET_NAME,
-      'keypair.pem'
+      process.env.BUCKET_NAME,
+      process.env.PRIVATE_KEY_NAME
     )
     const jwks = JSON.parse(
-      await helpers.readS3File(s3, process.env.KEY_BUCKET_NAME, 'jwks.json')
+      await helpers.readS3File(
+        s3,
+        process.env.BUCKET_NAME,
+        process.env.JWKS_JSON_NAME
+      )
     )
 
     // Issue JWT tokens

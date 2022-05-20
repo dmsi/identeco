@@ -10,7 +10,10 @@ provider:
   environment:
     TABLE_NAME: ${self:custom.usersTableName}
     KEY_BUCKET_NAME: ${self:custom.keysBucketName}
+    BUCKET_NAME: ${self:custom.keysBucketName}
     REGION: ${self:provider.region}
+    PRIVATE_KEY_NAME: 'keypair.pem'
+    JWKS_JSON_NAME: 'jwks.json'
   iam:
     role:
       statements:
@@ -65,9 +68,7 @@ functions:
   rotateKeys:
     handler: src/handlers/rotateKeys.handler
     events:
-      - http:
-          method: get
-          path: rotate
+      - schedule: rate(10 days)
 
 resources:
   Resources:
