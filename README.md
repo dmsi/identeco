@@ -26,36 +26,73 @@ CW ----> F_ROTATE(rotateKeys)
 F_ROTATE --- S3
 ```
 
-# Prereqs
+# Pre-reqs
 
-Once stack is deployed the _keypair.pem_ and _jwks.json_ needs to be uploaded to the s3 bucket.
+- nodejs (tested on v16.15.0)
+- serverless installed globally (tested on 3.16.0)
 
-> **Note** this is no longer actuall the key rotation is happening periodically
-> but it is still required to invoke rotateKeys once after deployment for the first rotation.
-
-# How to deploy / remove
-
-Deploy whole stack
-
-```
-sls deploy
-sls invoke function -f rotateKeys
+```sh
+npm install -g serverless
 ```
 
-Currently the rotateKeys function needs to be triggered the first time in order to create the keys in s3 for the first time.
+# Operations
+
+## Deploy
+
+Deploy whole stack (default stage is 'dev')
+
+```bash
+serverless deploy
+serverless invoke function -f rotateKeys
+```
+
+> **Note** rotateKeys function is trigerred periodically by CloudWatch events but in order to
+> rotate keys the first time it needs to be triggered manually right after the deployment.
+
+Serverless will create AWS `cloudformation` with all the resources specified in `serverless.yml`.
+Example output
+
+```
+$ serverless deploy
+
+Deploying identeco to stage dev (eu-west-1)
+
+✔ Service deployed to stack identeco-dev (58s)
+
+endpoints:
+  GET - https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev/.well-known/jwks.json
+  POST - https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev/register
+  POST - https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev/login
+  GET - https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev/refresh
+functions:
+  getJwks: identeco-dev-getJwks (17 MB)
+  register: identeco-dev-register (17 MB)
+  login: identeco-dev-login (17 MB)
+  refresh: identeco-dev-refresh (17 MB)
+  rotateKeys: identeco-dev-rotateKeys (17 MB)
+
+Monitor all your API routes with Serverless Console: run "serverless --console"
+```
+
+## Remove
 
 Remove whole stack
 
-> **Note** manually remove all object from s3 bucket
+> **Note** Manually remove all object from s3 bucket before stack deletion.
+> i.e. `aws s3 rm s3://identeco-keys --recursive`
+
+This will remove all underlying resources from the `cloudformation` stack.
 
 ```
-sls remove
+serverless remove
 ```
 
-Deploy a single function (register)
+## Deploy a single lambda function
+
+The following will deploy `register` function
 
 ```
-sls deploy function -f register
+serverless deploy function -f register
 ```
 
 # Features
