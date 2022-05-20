@@ -1,6 +1,6 @@
 # Identeco
 
-Minimalist authentication and authorization provider implemented using AWS lambda.
+Minimalist authentication and authorization provider implemented using AWS Lambda.
 
 # Principal design
 
