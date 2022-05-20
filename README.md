@@ -5,21 +5,25 @@ Minimalist authentication and authorization provider implemented using AWS lambd
 # Principal design
 
 ```mermaid
-graph LR
-FnRotate(rotateKeys)
-S3[S3 bucket]
-ScheduledEvent((every<br/>30 days)) -- Fire event --> FnRotate
-FnRotate -- Update<br/>keypair.pem<br/>jwks.json --> S3
-User((user)) -- POST<br/>/register --> FnRegister(register) -- Create user --> DDB[DynamoDB]
-FnRegister -- 200 OK --> User
-User -- POST<br/>/login --> FnLogin(login) -- Verify<br/>password --> DDB
-FnLogin -- Read Keys --> S3
-FnLogin -- accessToken<br/>refreshToken --> User
-User -- GET<br/>/refresh --> FnRefresh(refresh) -- Read Keys --> S3
-FnRefresh -- accessToken --> User
-User -- GET<br/>/.well-known/jwks.json --> FnGetJwks(getJwks)
-FnGetJwks -- Get jwks.json --> S3
-FnGetJwks -- jwks.json --> User
+flowchart LR
+U((user)) <===> |HTTP| API([API Gateway])
+API ----> |POST /register| F_REGISTER(register)
+API ----> |POST /login| F_LOGIN(login)
+API ----> |GET /refresh| F_REFRESH(refresh)
+API ----> |GET<br/>/.well-known/jwks.json| F_GETJWKS(getJwks)
+
+%% User data %%%
+F_REGISTER --- DB[(DynamoDB<br/>users)]
+F_LOGIN --- DB
+
+%% Private and public keys %%
+F_LOGIN --- S3[(S3<br/>keys)]
+F_REFRESH --- S3
+F_GETJWKS --- S3
+
+EVENT((every<br/>30 days)) ---- |event| CW([CloudWatch])
+CW ----> F_ROTATE(rotateKeys)
+F_ROTATE --- S3
 ```
 
 # Prereqs
