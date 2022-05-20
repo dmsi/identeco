@@ -1,9 +1,12 @@
-'use strict'
-const {
+//
+// Various helpers
+//
+
+import {
   S3Client,
   GetObjectCommand,
   PutObjectCommand,
-} = require('@aws-sdk/client-s3')
+} from '@aws-sdk/client-s3'
 
 class BackendError extends Error {
   constructor(e) {
@@ -45,7 +48,7 @@ async function writeS3File(client, bucket, key, body) {
   )
 }
 
-module.exports = {
+export default {
   readS3File,
   writeS3File,
   getStatusCode,

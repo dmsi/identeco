@@ -8,5 +8,31 @@
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.5",
     "pem-jwk": "^2.0.0"
-  }
+  },
+  "name": "identeco",
+  "type": "module",
+  "description": "Minimalist authentication and authorization provider implemented using AWS lambda.",
+  "version": "0.1.0",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmsi/identeco.git"
+  },
+  "keywords": [
+    "authentication",
+    "authorization"
+  ],
+  "author": "Dmitry Simakov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dmsi/identeco/issues"
+  },
+  "homepage": "https://github.com/dmsi/identeco#readme"
 }

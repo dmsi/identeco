@@ -79,7 +79,7 @@ sls deploy function -f register
 
 - [x] Add dependencies for python tests
 - [x] Replace API /rotate to cron-like scheduled event (CloudWatch?)
-- [ ] Replace require to EC6-style import
+- [x] Replace require to EC6-style import
 - [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
 
 ## v0.2.0

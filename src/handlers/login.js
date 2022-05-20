@@ -1,10 +1,14 @@
-'use strict'
-const { DynamoDB } = require('@aws-sdk/client-dynamodb')
-const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb')
-const { S3Client } = require('@aws-sdk/client-s3')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
-const helpers = require('../helpers')
+//
+// Login using username and password issue accessToken and refreshToken
+// upon the success.
+//
+
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
+import { S3Client } from '@aws-sdk/client-s3'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
+import helpers from '../helpers.js'
 
 const ddb = new DynamoDB({ region: process.env.REGION })
 const s3 = new S3Client({ region: process.env.REGION })
@@ -79,7 +83,7 @@ async function issueTokens(username) {
   }
 }
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   try {
     const { username, password } = getInput(event)
     await verifyPassword(username, password)
@@ -101,3 +105,5 @@ module.exports.handler = async (event) => {
     }
   }
 }
+
+export { handler }

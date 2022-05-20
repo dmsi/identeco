@@ -1,5 +1,3 @@
-'use strict'
-
 //
 // Rotate RSA keys
 //
@@ -8,10 +6,10 @@
 // Keeps the previous JWK keys as jwks.keys[1].
 //
 
-const { S3Client } = require('@aws-sdk/client-s3')
-const crypto = require('crypto')
-const { pem2jwk } = require('pem-jwk')
-const helpers = require('../helpers')
+import { S3Client } from '@aws-sdk/client-s3'
+import crypto from 'crypto'
+import { pem2jwk } from 'pem-jwk'
+import helpers from '../helpers.js'
 
 const s3 = new S3Client({ region: process.env.REGION })
 
@@ -87,7 +85,7 @@ async function rotateKeys(privateKeyPem, jwks) {
   ])
 }
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   try {
     console.log('Rotating Keys...')
     const { privateKeyPem, jwks } = generateKeys()
@@ -105,3 +103,5 @@ module.exports.handler = async (event) => {
     }
   }
 }
+
+export { handler }

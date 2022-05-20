@@ -1,13 +1,15 @@
-'use strict'
+//
+// Register new user.
+//
 
-const { DynamoDB } = require('@aws-sdk/client-dynamodb')
-const { marshall } = require('@aws-sdk/util-dynamodb')
-const bcrypt = require('bcryptjs')
-const helpers = require('../helpers')
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { marshall } from '@aws-sdk/util-dynamodb'
+import bcrypt from 'bcryptjs'
+import helpers from '../helpers.js'
 
 const ddb = new DynamoDB({ region: process.env.REGION })
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   try {
     const { username, password } = JSON.parse(event.body)
 
@@ -45,3 +47,5 @@ module.exports.handler = async (event) => {
     }
   }
 }
+
+export { handler }

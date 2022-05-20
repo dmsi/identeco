@@ -1,10 +1,13 @@
-'use strict'
-const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3')
-const helpers = require('../helpers')
+//
+// Return public keys as jwks.json
+//
+
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import helpers from '../helpers.js'
 
 const s3 = new S3Client({ region: process.env.REGION })
 
-module.exports.handler = async (event) => {
+const handler = async (event) => {
   try {
     const jwks = await helpers.readS3File(
       s3,
@@ -27,3 +30,5 @@ module.exports.handler = async (event) => {
     }
   }
 }
+
+export { handler }
