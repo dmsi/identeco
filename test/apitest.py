@@ -17,7 +17,7 @@ class State:
 
 
 def getEndpoint(path):
-    return f"https://hfbez7dpci.execute-api.eu-west-1.amazonaws.com/dev{path}"
+    return f"https://7lqz6fhqv1.execute-api.eu-west-1.amazonaws.com/dev{path}"
 
 
 def randomString():

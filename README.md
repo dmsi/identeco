@@ -1,6 +1,33 @@
+# Identeco
+
+Minimalist authentication and authorization provider implemented using AWS lambda.
+
+# Principal design
+
+```mermaid
+graph LR
+FnRotate(rotateKeys)
+S3[S3 bucket]
+ScheduledEvent((every<br/>30 days)) -- Fire event --> FnRotate
+FnRotate -- Update<br/>keypair.pem<br/>jwks.json --> S3
+User((user)) -- POST<br/>/register --> FnRegister(register) -- Create user --> DDB[DynamoDB]
+FnRegister -- 200 OK --> User
+User -- POST<br/>/login --> FnLogin(login) -- Verify<br/>password --> DDB
+FnLogin -- Read Keys --> S3
+FnLogin -- accessToken<br/>refreshToken --> User
+User -- GET<br/>/refresh --> FnRefresh(refresh) -- Read Keys --> S3
+FnRefresh -- accessToken --> User
+User -- GET<br/>/.well-known/jwks.json --> FnGetJwks(getJwks)
+FnGetJwks -- Get jwks.json --> S3
+FnGetJwks -- jwks.json --> User
+```
+
 # Prereqs
 
 Once stack is deployed the _keypair.pem_ and _jwks.json_ needs to be uploaded to the s3 bucket.
+
+> **Note** this is no longer actuall the key rotation is happening periodically
+> but it is still required to invoke rotateKeys once after deployment for the first rotation.
 
 # How to deploy / remove
 
@@ -14,6 +41,8 @@ sls invoke function -f rotateKeys
 Currently the rotateKeys function needs to be triggered the first time in order to create the keys in s3 for the first time.
 
 Remove whole stack
+
+> **Note** manually remove all object from s3 bucket
 
 ```
 sls remove
@@ -32,16 +61,23 @@ sls deploy function -f register
 - Automatic keys rotation
 - In jwks.json keeps the previous public key as well
 
-# Known Issues
+# Known Issues and Limitations
 
 - In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
 - _keypair.pem_ and _jwks.json_ needs to be pre-created and manually uploaded to s3 bucket
+- Supports only authentication (username claim).
+- No email confirmation
+- No OpenID support
 
 # Roadmap
 
 ## v0.1.0
 
-[x] Add dependencies for python tests
-[x] Replace API /rotate to cron-like scheduled event (CloudWatch?)
-[] Replace require to EC6-style import
-[x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
+- [x] Add dependencies for python tests
+- [x] Replace API /rotate to cron-like scheduled event (CloudWatch?)
+- [ ] Replace require to EC6-style import
+- [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
+
+## v0.2.0
+
+- [ ] Implement CI/CD actions on pushes to main

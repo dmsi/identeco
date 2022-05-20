@@ -1,4 +1,4 @@
-service: myid-lambda
+service: identeco
 
 frameworkVersion: '3'
 
