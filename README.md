@@ -140,11 +140,18 @@ serverless deploy function -f register
 ## v0.1.0-alpha
 
 - [x] Add dependencies for python tests
-- [x] Replace API /rotate to cron-like scheduled event (CloudWatch?)
+- [x] Replace API /rotate to cron-like scheduled event (CloudWatch)
 - [x] Replace require to EC6-style import
 - [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
 
 ## v0.1.1-alpha
 
-- [ ] Implement CI/CD actions on pushes to main
+- [ ] Add configurable key length (env vars)
+- [ ] Add configurable accessToken duration and keys rotation period (env vars)
+- [ ] Add individual IAM roles per function (sls plugin)
+- [ ] Split helpers to generic/s3/dynamodb modules
+- [ ] Implement CI/CD actions on pushes to main (deploy stage `prod`)
+
+## v0.1.2-alpha
+
 - [ ] TBD

@@ -114,8 +114,6 @@ def testLogin(should_pass):
         verifyToken("accessToken", body["accessToken"])
         verifyToken("refreshToken", body["refreshToken"])
 
-
-
     print("*** PASSED ***")
     print()
 

@@ -66,8 +66,6 @@ async function rotateKeys(privateKeyPem, jwks) {
     }
   } catch {}
 
-  console.log('****jwks:', jwks)
-
   // Upload private key and jwks to s3
   await Promise.all([
     helpers.writeS3File(

@@ -13,10 +13,6 @@ const handler = async (event) => {
   try {
     const { username, password } = JSON.parse(event.body)
 
-    console.log(event)
-    console.log('username:', username)
-    console.log('password:', password)
-
     // Check request parameters
     if (typeof username !== 'string' || typeof password !== 'string') {
       throw new helpers.BackendError({
