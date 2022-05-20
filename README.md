@@ -82,6 +82,7 @@ sls deploy function -f register
 - [x] Replace require to EC6-style import
 - [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
 
-## v0.2.0
+## v0.1.1
 
 - [ ] Implement CI/CD actions on pushes to main
+- [ ] TBD
