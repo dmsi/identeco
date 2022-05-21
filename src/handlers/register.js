@@ -5,9 +5,8 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { marshall } from '@aws-sdk/util-dynamodb'
 import bcrypt from 'bcryptjs'
+import { addUser, getUser } from '../user.js'
 import helpers from '../helpers.js'
-
-const ddb = new DynamoDB({ region: process.env.REGION })
 
 const handler = async (event) => {
   try {
@@ -21,16 +20,11 @@ const handler = async (event) => {
       })
     }
 
-    // In case of existing username, that will throw 500
-    const params = {
-      TableName: process.env.TABLE_NAME,
-      Item: marshall({
-        username,
-        password: await bcrypt.hash(password, 10),
-      }),
-      ConditionExpression: 'attribute_not_exists(username)',
-    }
-    await ddb.putItem(params)
+    // Add user to the database
+    await addUser({
+      username,
+      hashedPassword: await bcrypt.hash(password, 10),
+    })
 
     return {
       statusCode: 200,

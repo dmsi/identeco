@@ -149,7 +149,7 @@ serverless deploy function -f register
 - [ ] Add configurable key length (env vars)
 - [ ] Add configurable accessToken duration and keys rotation period (env vars)
 - [ ] Add individual IAM roles per function (sls plugin)
-- [ ] Split helpers to generic/s3/dynamodb modules
+- [x] Split helpers to generic/s3/dynamodb modules
 - [ ] Implement CI/CD actions on pushes to main (deploy stage `prod`)
 
 ## v0.1.2-alpha

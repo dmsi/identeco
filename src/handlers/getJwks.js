@@ -2,15 +2,12 @@
 // Return public keys as jwks.json
 //
 
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { readS3Object } from '../s3-helpers.js'
 import helpers from '../helpers.js'
-
-const s3 = new S3Client({ region: process.env.REGION })
 
 const handler = async (event) => {
   try {
-    const jwks = await helpers.readS3File(
-      s3,
+    const jwks = await readS3Object(
       process.env.BUCKET_NAME,
       process.env.JWKS_JSON_NAME
     )
