@@ -131,7 +131,7 @@ serverless deploy function -f register
 # Known Issues and Limitations
 
 - In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
-- Supports only authentication (username claim).
+- Supports only authentication (`username` claim).
 - No email confirmation
 - No OpenID support
 
@@ -148,7 +148,7 @@ serverless deploy function -f register
 
 - [x] Add configurable key length (env vars)
 - [x] Add configurable accessToken duration and keys rotation period (env vars)
-- [ ] Add individual IAM roles per function (sls plugin)
+- [x] Add individual IAM roles per function (sls plugin)
 - [x] Split helpers to generic/s3/dynamodb modules
 
 ## v0.1.2-alpha

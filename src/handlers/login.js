@@ -8,7 +8,7 @@ import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { readS3Object } from '../s3-helpers.js'
-import { addUser, getUser } from '../user.js'
+import { getUser } from '../user.js'
 import helpers from '../helpers.js'
 
 function getInput(event) {

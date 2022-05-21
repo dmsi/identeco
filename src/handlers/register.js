@@ -5,7 +5,7 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { marshall } from '@aws-sdk/util-dynamodb'
 import bcrypt from 'bcryptjs'
-import { addUser, getUser } from '../user.js'
+import { addUser } from '../user.js'
 import helpers from '../helpers.js'
 
 const handler = async (event) => {

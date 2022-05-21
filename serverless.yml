@@ -1,3 +1,6 @@
+plugins:
+  - serverless-iam-roles-per-function
+
 service: identeco
 
 frameworkVersion: '3'
@@ -8,39 +11,28 @@ provider:
   profile: dmitry-aws
   runtime: nodejs14.x
   environment:
-    TABLE_NAME: ${self:custom.usersTableName}
-    BUCKET_NAME: ${self:custom.keysBucketName}
+    TABLE_NAME: ${self:service}-users
+    BUCKET_NAME: ${self:service}-keys
     REGION: ${self:provider.region}
     PRIVATE_KEY_NAME: 'keypair.pem'
     JWKS_JSON_NAME: 'jwks.json'
     PRIVATE_KEY_LENGTH: 2048
     PRIVATE_KEY_LIFETIME: '30 days'
     ACCESS_TOKEN_LIFETIME: '60 minutes'
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - dynamodb:PutItem
-            - dynamodb:GetItem
-          Resource: ${self:custom.usersTableArn}
-        - Effect: Allow
-          Action:
-            - s3:GetObject
-            - s3:PutObject
-          Resource:
-            Fn::Join:
-              - '/'
-              - - ${self:custom.keysBucketArn}
-                - '*'
 
 custom:
-  usersTableName: ${self:service}-users
   usersTableArn:
     Fn::GetAtt: [usersTable, Arn]
-  keysBucketName: ${self:service}-keys
-  keysBucketArn:
-    Fn::GetAtt: [keysBucket, Arn]
+  privateKeyObjectArn:
+    Fn::Join:
+      - '/'
+      - - Fn::GetAtt: [keysBucket, Arn]
+        - ${self:provider.environment.PRIVATE_KEY_NAME}
+  jwksObjectArn:
+    Fn::Join:
+      - '/'
+      - - Fn::GetAtt: [keysBucket, Arn]
+        - ${self:provider.environment.JWKS_JSON_NAME}
 
 functions:
   getJwks:
@@ -49,35 +41,76 @@ functions:
       - http:
           method: get
           path: '.well-known/jwks.json'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource:
+          - ${self:custom.jwksObjectArn}
+
   register:
     handler: src/handlers/register.handler
     events:
       - http:
           method: post
           path: register
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: ${self:custom.usersTableArn}
+
   login:
     handler: src/handlers/login.handler
     events:
       - http:
           method: post
           path: login
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: ${self:custom.usersTableArn}
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource:
+          - ${self:custom.privateKeyObjectArn}
+          - ${self:custom.jwksObjectArn}
+
   refresh:
     handler: src/handlers/refresh.handler
     events:
       - http:
           method: get
           path: refresh
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource:
+          - ${self:custom.privateKeyObjectArn}
+          - ${self:custom.jwksObjectArn}
+
   rotateKeys:
     handler: src/handlers/rotateKeys.handler
     events:
       - schedule: rate(${self:provider.environment.PRIVATE_KEY_LIFETIME})
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:PutObject
+        Resource:
+          - ${self:custom.privateKeyObjectArn}
+          - ${self:custom.jwksObjectArn}
 
 resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.usersTableName}
+        TableName: ${self:provider.environment.TABLE_NAME}
         AttributeDefinitions:
           - AttributeName: username
             AttributeType: S
@@ -90,5 +123,5 @@ resources:
     keysBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:custom.keysBucketName}
+        BucketName: ${self:provider.environment.BUCKET_NAME}
         AccessControl: Private
