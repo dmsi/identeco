@@ -13,6 +13,9 @@ provider:
     REGION: ${self:provider.region}
     PRIVATE_KEY_NAME: 'keypair.pem'
     JWKS_JSON_NAME: 'jwks.json'
+    PRIVATE_KEY_LENGTH: 2048
+    PRIVATE_KEY_LIFETIME: '30 days'
+    ACCESS_TOKEN_LIFETIME: '60 minutes'
   iam:
     role:
       statements:
@@ -67,7 +70,7 @@ functions:
   rotateKeys:
     handler: src/handlers/rotateKeys.handler
     events:
-      - schedule: rate(10 days)
+      - schedule: rate(${self:provider.environment.PRIVATE_KEY_LIFETIME})
 
 resources:
   Resources:

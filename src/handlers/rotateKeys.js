@@ -14,7 +14,7 @@ import helpers from '../helpers.js'
 function generateKeys() {
   // Generate RSA keypair
   const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-    modulusLength: 2048,
+    modulusLength: parseInt(process.env.PRIVATE_KEY_LENGTH),
     publicKeyEncoding: {
       type: 'spki',
       format: 'pem',

@@ -55,13 +55,13 @@ async function issueTokens(username) {
   }
   const options = {
     algorithm: 'RS256',
-    expiresIn: '60m',
+    expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
     keyid: jwks.keys[0].kid,
   }
   const accessToken = jwt.sign(claims, privateKeyPem, options)
   const refreshToken = jwt.sign(claims, privateKeyPem, {
     ...options,
-    expiresIn: '10d',
+    expiresIn: process.env.PRIVATE_KEY_LIFETIME, // sync refresh lifetime with key rotation interval
   })
 
   // Return tokens

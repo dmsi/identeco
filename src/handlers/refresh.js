@@ -46,7 +46,7 @@ const handler = async (event) => {
     }
     const options = {
       algorithm: 'RS256',
-      expiresIn: '60m',
+      expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
       keyid: jwks.keys[0].kid,
     }
     const accessToken = jwt.sign(claims, privateKeyPem, options)

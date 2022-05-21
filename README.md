@@ -146,12 +146,13 @@ serverless deploy function -f register
 
 ## v0.1.1-alpha
 
-- [ ] Add configurable key length (env vars)
-- [ ] Add configurable accessToken duration and keys rotation period (env vars)
+- [x] Add configurable key length (env vars)
+- [x] Add configurable accessToken duration and keys rotation period (env vars)
 - [ ] Add individual IAM roles per function (sls plugin)
 - [x] Split helpers to generic/s3/dynamodb modules
-- [ ] Implement CI/CD actions on pushes to main (deploy stage `prod`)
 
 ## v0.1.2-alpha
 
+- [ ] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
+- [ ] Implement CI/CD actions on pushes to main (deploy stage `prod`)
 - [ ] TBD
