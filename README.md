@@ -131,7 +131,7 @@ serverless deploy function -f register
 # Known Issues and Limitations
 
 - In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
-- Supports only authentication (username claim).
+- Supports only authentication (`username` claim).
 - No email confirmation
 - No OpenID support
 
@@ -140,11 +140,19 @@ serverless deploy function -f register
 ## v0.1.0-alpha
 
 - [x] Add dependencies for python tests
-- [x] Replace API /rotate to cron-like scheduled event (CloudWatch?)
+- [x] Replace API /rotate to cron-like scheduled event (CloudWatch)
 - [x] Replace require to EC6-style import
 - [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
 
 ## v0.1.1-alpha
 
-- [ ] Implement CI/CD actions on pushes to main
+- [x] Add configurable key length (env vars)
+- [x] Add configurable accessToken duration and keys rotation period (env vars)
+- [x] Add individual IAM roles per function (sls plugin)
+- [x] Split helpers to generic/s3/dynamodb modules
+
+## v0.1.2-alpha
+
+- [ ] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
+- [ ] Implement CI/CD actions on pushes to main (deploy stage `prod`)
 - [ ] TBD

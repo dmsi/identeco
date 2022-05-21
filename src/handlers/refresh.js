@@ -2,12 +2,10 @@
 // Refresh accessToken using refreshToken
 //
 
-import { S3Client } from '@aws-sdk/client-s3'
 import jwkToPem from 'jwk-to-pem'
 import jwt from 'jsonwebtoken'
+import { readS3Object } from '../s3-helpers.js'
 import helpers from '../helpers.js'
-
-const s3 = new S3Client({ region: process.env.REGION })
 
 function verifyToken(jwks, token) {
   const { kid, alg } = jwt.decode(token, { complete: true }).header
@@ -31,17 +29,12 @@ const handler = async (event) => {
     const refreshToken = auth.split(' ')[1]
 
     // Read keys
-    const privateKeyPem = await helpers.readS3File(
-      s3,
+    const privateKeyPem = await readS3Object(
       process.env.BUCKET_NAME,
       process.env.PRIVATE_KEY_NAME
     )
     const jwks = JSON.parse(
-      await helpers.readS3File(
-        s3,
-        process.env.BUCKET_NAME,
-        process.env.JWKS_JSON_NAME
-      )
+      await readS3Object(process.env.BUCKET_NAME, process.env.JWKS_JSON_NAME)
     )
 
     // Verify refresh token's signature
@@ -53,7 +46,7 @@ const handler = async (event) => {
     }
     const options = {
       algorithm: 'RS256',
-      expiresIn: '60m',
+      expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
       keyid: jwks.keys[0].kid,
     }
     const accessToken = jwt.sign(claims, privateKeyPem, options)

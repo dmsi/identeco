@@ -17,7 +17,9 @@
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "serverless-iam-roles-per-function": "^3.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +28,7 @@
     "url": "git+https://github.com/dmsi/identeco.git"
   },
   "keywords": ["authentication", "authorization"],
-  "author": "Dmitry Simakov",
+  "author": "Dmitry Simakov <dosimakov@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/dmsi/identeco/issues"

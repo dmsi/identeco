@@ -6,17 +6,15 @@
 // Keeps the previous JWK keys as jwks.keys[1].
 //
 
-import { S3Client } from '@aws-sdk/client-s3'
 import crypto from 'crypto'
 import { pem2jwk } from 'pem-jwk'
+import { readS3Object, writeS3Object } from '../s3-helpers.js'
 import helpers from '../helpers.js'
-
-const s3 = new S3Client({ region: process.env.REGION })
 
 function generateKeys() {
   // Generate RSA keypair
   const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-    modulusLength: 2048,
+    modulusLength: parseInt(process.env.PRIVATE_KEY_LENGTH),
     publicKeyEncoding: {
       type: 'spki',
       format: 'pem',
@@ -55,29 +53,21 @@ async function rotateKeys(privateKeyPem, jwks) {
   // Retreive current key and append to jwks as the previous key
   try {
     const current = JSON.parse(
-      await helpers.readS3File(
-        s3,
-        process.env.BUCKET_NAME,
-        process.env.JWKS_JSON_NAME
-      )
+      await readS3Object(process.env.BUCKET_NAME, process.env.JWKS_JSON_NAME)
     )
     if (current.keys.length > 0) {
       jwks.keys.push(current.keys[0])
     }
   } catch {}
 
-  console.log('****jwks:', jwks)
-
   // Upload private key and jwks to s3
   await Promise.all([
-    helpers.writeS3File(
-      s3,
+    writeS3Object(
       process.env.BUCKET_NAME,
       process.env.PRIVATE_KEY_NAME,
       privateKeyPem
     ),
-    helpers.writeS3File(
-      s3,
+    writeS3Object(
       process.env.BUCKET_NAME,
       process.env.JWKS_JSON_NAME,
       JSON.stringify(jwks)
