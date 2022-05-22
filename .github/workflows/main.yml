@@ -3,7 +3,7 @@ name: Deploy identeco
 on:
   push:
     branches:
-      - dev-0.1.2-alpha
+      - main
 
 jobs:
   deploy:

@@ -131,7 +131,7 @@ serverless deploy function -f register
 # Known Issues and Limitations
 
 - In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
-- Supports only authentication (`username` claim).
+- Supports only authentication (`username` claim), i.e. identeco confirms that the owner of the claim has `username`
 - No email confirmation
 - No OpenID support
 
@@ -155,10 +155,11 @@ serverless deploy function -f register
 
 - [x] Add stage name to S3 bucket `identeco-<stage>-keys` and DynamoDB table `identeco-<stage>-users`
 - [x] Implement CI/CD action when push to main branch (deploy stage `prod`)
-- [ ] Fix CI/CD issue with the profile (conditional profile for `dev` stage in `serverless.yml`)
+- [x] Fix CI/CD issue with the profile (used `yq` action in order to remove profile from `serverless.yml`)
 - [ ] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
-- [ ] Return appropriate HTTP status code in all cases instead of 500
 
 ## v0.1.3-alpha
 
+- [ ] Return appropriate HTTP status code in all cases instead of 500
+- [ ] GitHub action `integration.yml` which will: deploy `test` stage (on dev-\* branches), run `apitest.py` and cleanup
 - [ ] TBD
