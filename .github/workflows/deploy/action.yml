@@ -1,0 +1,32 @@
+name: Deploy identeco
+description: Deploys identeco on AWS
+inputs:
+  stage:
+    description: Stage to deploy (dev, prod, test, ...)
+    required: true
+    default: prod
+runs:
+  using: composite
+  steps:
+    - run: npm ci
+
+    - name: Remove profile from serverless.yml
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq -i 'del(.provider.profile)' serverless.yml
+
+    - name: serverless deploy
+      uses: serverless/github-action@v3
+      with:
+        args: deploy --stage ci
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: rotate keys
+      uses: serverless/github-action@v3
+      with:
+        args: invoke --stage ci -f rotateKeys
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
