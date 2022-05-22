@@ -11,8 +11,8 @@ provider:
   profile: dmitry-aws
   runtime: nodejs14.x
   environment:
-    TABLE_NAME: ${self:service}-users
-    BUCKET_NAME: ${self:service}-keys
+    TABLE_NAME: ${self:service}-${sls:stage}-users
+    BUCKET_NAME: ${self:service}-${sls:stage}-keys
     REGION: ${self:provider.region}
     PRIVATE_KEY_NAME: 'keypair.pem'
     JWKS_JSON_NAME: 'jwks.json'

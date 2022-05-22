@@ -153,6 +153,8 @@ serverless deploy function -f register
 
 ## v0.1.2-alpha
 
+- [x] Add stage name to S3 bucket `identeco-<stage>-keys` and DynamoDB table `identeco-<stage>-users`
 - [ ] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
-- [ ] Implement CI/CD actions on pushes to main (deploy stage `prod`)
+- [ ] Return appropriate HTTP status code in all cases instead of 500
+- [ ] Implement CI/CD action when push to main branch (deploy stage `prod`)
 - [ ] TBD
