@@ -22,14 +22,14 @@ jobs:
     - name: serverless deploy
       uses: serverless/github-action@v3
       with:
-        args: deploy --stage prod
+        args: deploy --stage prod --profile default
       env:
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     - name: rotate keys
       uses: serverless/github-action@v3
       with:
-        args: invoke --stage prod -f rotateKeys
+        args: invoke --stage prod --profile default -f rotateKeys
       env:
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
