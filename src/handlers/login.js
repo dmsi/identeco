@@ -50,16 +50,24 @@ async function issueTokens(username) {
   )
 
   // Issue JWT tokens
-  const claims = {
+  // NOTE name convention for token_use:
+  // snake_case to make it somewhat compatible with AWS Cognito
+  // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
+  const accessClaims = {
     username,
+    token_use: 'access',
+  }
+  const refreshClaims = {
+    username,
+    token_use: 'refresh',
   }
   const options = {
     algorithm: 'RS256',
     expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
     keyid: jwks.keys[0].kid,
   }
-  const accessToken = jwt.sign(claims, privateKeyPem, options)
-  const refreshToken = jwt.sign(claims, privateKeyPem, {
+  const accessToken = jwt.sign(accessClaims, privateKeyPem, options)
+  const refreshToken = jwt.sign(refreshClaims, privateKeyPem, {
     ...options,
     expiresIn: process.env.PRIVATE_KEY_LIFETIME, // sync refresh lifetime with key rotation interval
   })

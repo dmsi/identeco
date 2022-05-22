@@ -27,7 +27,10 @@
     "type": "git",
     "url": "git+https://github.com/dmsi/identeco.git"
   },
-  "keywords": ["authentication", "authorization"],
+  "keywords": [
+    "authentication",
+    "authorization"
+  ],
   "author": "Dmitry Simakov <dosimakov@gmail.com>",
   "license": "MIT",
   "bugs": {
