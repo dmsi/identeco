@@ -156,7 +156,9 @@ serverless deploy function -f register
 - [x] Add stage name to S3 bucket `identeco-<stage>-keys` and DynamoDB table `identeco-<stage>-users`
 - [x] Implement CI/CD action when push to main branch (deploy stage `prod`)
 - [ ] Fix CI/CD issue with the profile (conditional profile for `dev` stage in `serverless.yml`)
-- [ ] GitHub action uses `npm ci` which also installs dev plugins, use `npm ci --production`
 - [ ] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
 - [ ] Return appropriate HTTP status code in all cases instead of 500
+
+## v0.1.3-alpha
+
 - [ ] TBD
