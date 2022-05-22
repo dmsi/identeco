@@ -18,7 +18,8 @@
     "test": "test"
   },
   "devDependencies": {
-    "serverless-iam-roles-per-function": "^3.2.0"
+    "serverless-iam-roles-per-function": "^3.2.0",
+    "serverless-plugin-ifelse": "^1.0.7"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,7 +28,10 @@
     "type": "git",
     "url": "git+https://github.com/dmsi/identeco.git"
   },
-  "keywords": ["authentication", "authorization"],
+  "keywords": [
+    "authentication",
+    "authorization"
+  ],
   "author": "Dmitry Simakov <dosimakov@gmail.com>",
   "license": "MIT",
   "bugs": {

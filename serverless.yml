@@ -1,14 +1,17 @@
 plugins:
   - serverless-iam-roles-per-function
+  - serverless-plugin-ifelse
 
 service: identeco
 
 frameworkVersion: '3'
 
+# TODO need to make profile conditional only for 'dev' stage
+# in order to make it compatible with the GitHub actions because
 provider:
   name: aws
   region: eu-west-1
-  #profile: identeco-cicd
+  profile: identeco 
   runtime: nodejs14.x
   environment:
     TABLE_NAME: ${self:service}-${sls:stage}-users
@@ -33,6 +36,10 @@ custom:
       - '/'
       - - Fn::GetAtt: [keysBucket, Arn]
         - ${self:provider.environment.JWKS_JSON_NAME}
+  serverlessIfElse:
+    - If: '"${sls:stage}" == "prod"'
+      Exclude:
+        provider.profile
 
 functions:
   getJwks:
