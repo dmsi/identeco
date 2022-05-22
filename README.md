@@ -156,10 +156,15 @@ serverless deploy function -f register
 - [x] Add stage name to S3 bucket `identeco-<stage>-keys` and DynamoDB table `identeco-<stage>-users`
 - [x] Implement CI/CD action when push to main branch (deploy stage `prod`)
 - [x] Fix CI/CD issue with the profile (used `yq` action in order to remove profile from `serverless.yml`)
-- [ ] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
+- [x] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
 
 ## v0.1.3-alpha
 
+- [ ] Add `iss` claims
+- [ ] `apitest.py` make verbose mode optional (don't print tokens by default)
 - [ ] Return appropriate HTTP status code in all cases instead of 500
 - [ ] GitHub action `integration.yml` which will: deploy `test` stage (on dev-\* branches), run `apitest.py` and cleanup
+
+## v0.1.4-alpha
+
 - [ ] TBD

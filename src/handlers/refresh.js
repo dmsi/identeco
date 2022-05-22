@@ -37,12 +37,19 @@ const handler = async (event) => {
       await readS3Object(process.env.BUCKET_NAME, process.env.JWKS_JSON_NAME)
     )
 
-    // Verify refresh token's signature
+    // Verify refresh token's signature and claims
     const decodedToken = verifyToken(jwks, refreshToken)
+    if (decodedToken.token_use !== 'refresh') {
+      throw new helpers.BackendError({
+        message: `unexpected token_use claim ${decodedToken.token_use}`,
+        status: 403,
+      })
+    }
 
     // Issue new access token
     const claims = {
       username: decodedToken.username,
+      token_use: 'access',
     }
     const options = {
       algorithm: 'RS256',
