@@ -29,8 +29,8 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    #- run: npm ci
-    #  shell: bash
+    - run: npm ci
+      shell: bash
 
     # TODO test without special action
     #- name: Remove profile from serverless.yml
