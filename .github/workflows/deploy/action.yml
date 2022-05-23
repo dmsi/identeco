@@ -11,6 +11,10 @@ inputs:
   aws-secret-access-key:
     description: AWS secret access key
     required: true
+outputs:
+  random-number:
+    description: 'AWS API Gateway ID'
+    value: ${{ steps.api-id.outputs.api-id }}
 runs:
   using: composite
   steps:
@@ -25,15 +29,24 @@ runs:
     - name: serverless deploy
       uses: serverless/github-action@v3
       with:
-        args: deploy --stage ci
+        args: deploy --stage ${{ inputs.stage }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
 
-    - name: rotate keys
+    - name: Rotate keys
       uses: serverless/github-action@v3
       with:
-        args: invoke --stage ci -f rotateKeys
+        args: invoke --stage ${{ inputs.stage }} -f rotateKeys
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+
+    - id: api-id
+      run: |
+        API_ID=$(aws cloudformation list-stack-resources       \
+                    --stack-name identeco-${{ inputs.stage }}  \
+                    --output json                              \
+                    --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
+        echo "::set-output name=api-id::$(echo ${API_ID//\"/})"
+      shell: bash
