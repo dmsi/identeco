@@ -1,0 +1,73 @@
+name: Deploy identeco
+description: Deploys identeco on AWS
+
+inputs:
+  stage:
+    description: Stage to deploy (dev, prod, test, ...)
+    required: true
+  aws-access-key-id:
+    description: AWS access key ID
+    required: true
+  aws-secret-access-key:
+    description: AWS secret access key
+    required: true
+  node-version:
+    description: Node.js version
+    required: true
+    default: 14.x
+
+outputs:
+  api-endpoint:
+    description: API Gateway endpoint
+    value: ${{ steps.produce-outputs.outputs.api-endpoint }}
+  aws-region:
+    description: AWS Region
+    value: ${{ steps.produce-outputs.outputs.aws-region }}
+
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - run: npm ci
+      shell: bash
+
+    - name: Remove profile from serverless.yml
+      run: |
+        yq -i 'del(.provider.profile)' serverless.yml
+      shell: bash
+
+    - name: serverless deploy
+      uses: serverless/github-action@v3
+      with:
+        args: deploy --stage ${{ inputs.stage }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+
+    - name: Rotate keys
+      uses: serverless/github-action@v3
+      with:
+        args: invoke --stage ${{ inputs.stage }} -f rotateKeys
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+
+    - id: produce-outputs
+      run: |
+        STAGE=${{ inputs.stage }}
+        REGION=$(yq '.provider.region' serverless.yml)
+        API_ID=$(aws --region $REGION cloudformation list-stack-resources   \
+                     --stack-name identeco-${{ inputs.stage }}              \
+                     --output json                                          \
+                     --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
+        ENDPOINT=https://${API_ID//\"/}.execute-api.$REGION.amazonaws.com/$STAGE
+        echo "::set-output name=api-endpoint::$(echo $ENDPOINT)"
+        echo "::set-output name=aws-region::$(echo $REGION)"
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}

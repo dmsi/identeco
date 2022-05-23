@@ -17,10 +17,11 @@ class State:
         self.refresh_token = None
         self.access_token = None
         self.jwks = None
+        self.verbose = 'VERBOSE' in os.environ
 
 
 def getEndpoint(path):
-    return f"{os.environ['IDENTECO_API_ADDRESS']}{path}"
+    return f"{os.environ['IDENTECO_API_ENDPOINT']}{path}"
 
 
 def randomString():
@@ -47,6 +48,9 @@ def verifyToken(token, expected_token_use, expected_token_username):
 
     if claims["username"] != expected_token_username:
         raise Exception(f"verifyToken {decoded_token.claims} FAILED: unexpected username")
+
+    if claims["iss"] != "https://github.com/dmsi/identeco":
+        raise Exception(f"verifyToken {decoded_token.claims} FAILED: unexpected iss")
 
     print(f"token {decoded_token.claims} => VERIFIED")
 
@@ -84,6 +88,7 @@ def testRegister(should_pass):
     )
 
     print(gethttpStatus(res))
+    # if (should_pass and res.status_code != 200) or (not should_pass and res.status_code == 200):
     if should_pass:
         if res.status_code != 200: 
             raise Exception(f"testRegister returned unexpected status code: {gethttpStatus(res)}")
@@ -119,7 +124,8 @@ def testLogin(should_pass):
 
     if should_pass:
         body = res.json()
-        print("tokens:", body)
+        if state.verbose:
+            print("tokens:", body)
         state.refresh_token = body["refreshToken"]
         state.access_token = body["accessToken"]
 
@@ -155,7 +161,8 @@ def testRefresh(should_pass, token_name):
 
     if should_pass:
         body = res.json()
-        print("tokens:", body)
+        if state.verbose:
+            print("tokens:", body)
 
         # Verify issued access token
         verifyToken(body["accessToken"], "access", state.username)

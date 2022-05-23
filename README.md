@@ -2,6 +2,8 @@
 
 Minimalist authentication and authorization provider implemented using AWS Lambda.
 
+[![CI identeco](https://github.com/dmsi/identeco/actions/workflows/ci.yml/badge.svg)](https://github.com/dmsi/identeco/actions/workflows/ci.yml)
+
 # Principal design
 
 ```mermaid
@@ -91,14 +93,14 @@ source myenv/bin/activate
 pip install -r requirements.txt
 
 # Run the test
-export IDENTECO_API_ADDRESS=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev
+export IDENTECO_API_ENDPOINT=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev
 python apitest.py
 ```
 
-> **Note** `IDENTECO_API_ADDRESS` env variable must be set prior running the test.
+> **Note** `IDENTECO_API_ENDPOINT` env variable must be set prior running the test.
 > The value must be taken from the `serverless deploy` output including stage (i.e. `/dev`)
 > but **excluding** the tailing `/` symbol.
-> For example: `export IDENTECO_API_ADDRESS=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev`
+> For example: `export IDENTECO_API_ENDPOINT=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev`
 
 ## Remove
 
@@ -160,11 +162,13 @@ serverless deploy function -f register
 
 ## v0.1.3-alpha
 
-- [ ] Add `iss` claims
-- [ ] `apitest.py` make verbose mode optional (don't print tokens by default)
-- [ ] Return appropriate HTTP status code in all cases instead of 500
-- [ ] GitHub action `integration.yml` which will: deploy `test` stage (on dev-\* branches), run `apitest.py` and cleanup
+- [x] GitHub action `ci.yml` which will: deploy `ci` stage (on dev-\* branches), run `apitest.py` and cleanup
+- [x] `apitest.py` make verbose mode optional (don't print tokens by default)
+- [x] Add CI badge to the README.md
+- [x] Add `iss` claims (default value https://github.com/dmsi/identeco)
 
 ## v0.1.4-alpha
 
 - [ ] TBD
+- [ ] Move issue token functionality to a module
+- [ ] Return appropriate HTTP status code in all cases instead of 500
