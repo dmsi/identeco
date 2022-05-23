@@ -55,11 +55,12 @@ runs:
 
     - id: api-id
       run: |
-        #API_ID=$(aws --region eu-west-1 cloudformation list-stack-resources       \
-        #            --stack-name identeco-${{ inputs.stage }}  \
-        #            --output json                              \
-        #            --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
-        #echo "::set-output name=api-id::$(echo ${API_ID//\"/})"
-        API_ID=xxyy123
+        API_ID=$(aws --region eu-west-1 cloudformation list-stack-resources       \
+                    --stack-name identeco-${{ inputs.stage }}  \
+                    --output json                              \
+                    --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
         echo "::set-output name=api-id::$(echo ${API_ID//\"/})"
       shell: bash
+      env: 
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
