@@ -160,9 +160,9 @@ serverless deploy function -f register
 
 ## v0.1.3-alpha
 
-- [ ] GitHub action `integration.yml` which will: deploy `test` stage (on dev-\* branches), run `apitest.py` and cleanup
+- [x] GitHub action `ci.yml` which will: deploy `ci` stage (on dev-\* branches), run `apitest.py` and cleanup
+- [x] `apitest.py` make verbose mode optional (don't print tokens by default)
 - [ ] Add `iss` claims
-- [ ] `apitest.py` make verbose mode optional (don't print tokens by default)
 - [ ] Return appropriate HTTP status code in all cases instead of 500
 
 ## v0.1.4-alpha

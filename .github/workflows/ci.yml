@@ -1,0 +1,46 @@
+name: CI identeco
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy identeco on AWS
+        id: deploy_action
+        uses: ./.github/workflows/deploy
+        with:
+          stage: ci
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Test API
+        run: |
+          pip install -r test/requirements.txt
+          python test/apitest.py
+        shell: bash
+        env:
+          IDENTECO_API_ENDPOINT: ${{ steps.deploy_action.outputs.api-endpoint }}
+
+      - name: Cleanup S3 keys bucket
+        run: |
+          aws s3 rm s3://identeco-ci-keys --recursive
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ steps.deploy_action.outputs.aws-region }}
+
+      - name: Cleanup cloudformation stack
+        uses: serverless/github-action@v3
+        with:
+          args: remove --stage ci
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
