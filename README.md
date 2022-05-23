@@ -165,7 +165,7 @@ serverless deploy function -f register
 - [x] GitHub action `ci.yml` which will: deploy `ci` stage (on dev-\* branches), run `apitest.py` and cleanup
 - [x] `apitest.py` make verbose mode optional (don't print tokens by default)
 - [x] Add CI badge to the README.md
-- [ ] Add `iss` claims (default value https://github.com/dmsi/identeco)
+- [x] Add `iss` claims (default value https://github.com/dmsi/identeco)
 
 ## v0.1.4-alpha
 
