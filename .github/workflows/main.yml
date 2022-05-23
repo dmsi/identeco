@@ -31,4 +31,7 @@ jobs:
       - run: |
           echo "--- API Endpoint:" ${{ steps.deploy_action.outputs.api-endpoint }}
           echo "--- API Region:" ${{ steps.deploy_action.outputs.aws-region }}
+          python --version
+          export IDENTECO_API_ENDPOINT=${{ steps.deploy_action.outputs.api-endpoint }}
+          python tests/apitest.py
         shell: bash

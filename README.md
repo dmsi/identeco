@@ -91,14 +91,14 @@ source myenv/bin/activate
 pip install -r requirements.txt
 
 # Run the test
-export IDENTECO_API_ADDRESS=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev
+export IDENTECO_API_ENDPOINT=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev
 python apitest.py
 ```
 
-> **Note** `IDENTECO_API_ADDRESS` env variable must be set prior running the test.
+> **Note** `IDENTECO_API_ENDPOINT` env variable must be set prior running the test.
 > The value must be taken from the `serverless deploy` output including stage (i.e. `/dev`)
 > but **excluding** the tailing `/` symbol.
-> For example: `export IDENTECO_API_ADDRESS=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev`
+> For example: `export IDENTECO_API_ENDPOINT=https://3yhosi5j8l.execute-api.eu-west-1.amazonaws.com/dev`
 
 ## Remove
 

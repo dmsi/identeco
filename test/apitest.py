@@ -20,7 +20,7 @@ class State:
 
 
 def getEndpoint(path):
-    return f"{os.environ['IDENTECO_API_ADDRESS']}{path}"
+    return f"{os.environ['IDENTECO_API_ENDPOINT']}{path}"
 
 
 def randomString():
