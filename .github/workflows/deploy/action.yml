@@ -12,9 +12,12 @@ inputs:
     description: AWS secret access key
     required: true
 outputs:
-  api-id:
-    description: 'AWS API Gateway ID'
-    value: ${{ steps.api-id.outputs.api-id }}
+  api-endpoint:
+    description: API Gateway endpoint
+    value: ${{ steps.produce-outputs.outputs.api-endpoint }}
+  aws-region:
+    description: AWS Region
+    value: ${{ steps.produce-outputs.outputs.aws-endpoint }}
 runs:
   using: composite
   steps:
@@ -30,10 +33,8 @@ runs:
     #      echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
     #
     - name: Remove profile from serverless.yml
-      id: yq
       run: |
         yq -i 'del(.provider.profile)' serverless.yml
-        echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
       shell: bash
 
     #- name: serverless deploy
@@ -53,25 +54,29 @@ runs:
     #    AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
 
     # DEBUG
-    - run: |
-        aws --region eu-west-1 cloudformation list-stack-resources       \
-            --stack-name identeco-${{ inputs.stage }}  \
-            --output json                              \
-            --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
-        echo "--- REGION:  ${{ steps.yq.outputs.aws-region }}"
-        echo "+++ REGION:" $(yq '.provider.region' serverless.yml)
-      shell: bash
-      env: 
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+    #- run: |
+    #    aws --region eu-west-1 cloudformation list-stack-resources       \
+    #        --stack-name identeco-${{ inputs.stage }}  \
+    #        --output json                              \
+    #        --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
+    #    echo "--- REGION:  ${{ steps.yq.outputs.aws-region }}"
+    #    echo "+++ REGION:" $(yq '.provider.region' serverless.yml)
+    #  shell: bash
+    #  env: 
+    #    AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+    #    AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
 
-    - id: api-id
+    - id: produce-outputs
       run: |
+        STAGE=${{ inputs.stage }}
+        REGION=$(yq '.provider.region' serverless.yml)
         API_ID=$(aws --region eu-west-1 cloudformation list-stack-resources       \
                     --stack-name identeco-${{ inputs.stage }}  \
                     --output json                              \
                     --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
-        echo "::set-output name=api-id::$(echo ${API_ID//\"/})"
+        ENDPOINT=https://${API_ID//\"/}.execute-api.$REGION.amazonaws.com/$STAGE
+        echo "::set-output name=api-endpoint::$(echo $ENDPOINT)"
+        echo "::set-output name=aws-region::$(echo $REGION)"
       shell: bash
       env: 
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}

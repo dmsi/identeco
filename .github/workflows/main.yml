@@ -28,5 +28,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - run: echo "--- API_ID:" ${{ steps.deploy_action.outputs.api-id }}
+      - run: |
+          echo "--- API Endpoint:" ${{ steps.deploy_action.outputs.api-endpoint }}
+          echo "--- API Endpoint:" ${{ steps.deploy_action.outputs.aws-region }}
         shell: bash
