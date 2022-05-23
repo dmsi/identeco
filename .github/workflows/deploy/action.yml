@@ -78,10 +78,10 @@ runs:
       run: |
         STAGE=${{ inputs.stage }}
         REGION=$(yq '.provider.region' serverless.yml)
-        API_ID=$(aws --region eu-west-1 cloudformation list-stack-resources       \
-                    --stack-name identeco-${{ inputs.stage }}  \
-                    --output json                              \
-                    --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
+        API_ID=$(aws --region $REGION cloudformation list-stack-resources  \
+                     --stack-name identeco-${{ inputs.stage }}              \
+                     --output json                                          \
+                     --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
         ENDPOINT=https://${API_ID//\"/}.execute-api.$REGION.amazonaws.com/$STAGE
         echo "::set-output name=api-endpoint::$(echo $ENDPOINT)"
         echo "::set-output name=aws-region::$(echo $REGION)"
