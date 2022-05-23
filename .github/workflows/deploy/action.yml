@@ -22,9 +22,12 @@ runs:
     #  shell: bash
 
     - name: Remove profile from serverless.yml
+      id: yq
       uses: mikefarah/yq@master
       with:
-        cmd: yq -i 'del(.provider.profile)' serverless.yml
+        cmd: |
+          yq -i 'del(.provider.profile)' serverless.yml
+          echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
 
     #- name: serverless deploy
     #  uses: serverless/github-action@v3
@@ -48,6 +51,7 @@ runs:
             --stack-name identeco-${{ inputs.stage }}  \
             --output json                              \
             --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
+        echo "--- REGION:" ${{ steps.yq.aws-region }}
       shell: bash
       env: 
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
