@@ -44,7 +44,10 @@ runs:
 
     # DEBUG
     - run: |
-        echo xxx
+        aws --region eu-west-1 cloudformation list-stack-resources       \
+            --stack-name identeco-${{ inputs.stage }}  \
+            --output json                              \
+            --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
       shell: bash
 
     - id: api-id
