@@ -52,6 +52,7 @@ runs:
             --output json                              \
             --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
         echo "--- REGION:" ${{ steps.yq.aws-region }}
+        echo "+++ REGION:" $(yq '.provider.region' serverless.yml)
       shell: bash
       env: 
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
