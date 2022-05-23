@@ -2,6 +2,8 @@
 
 Minimalist authentication and authorization provider implemented using AWS Lambda.
 
+[![CI identeco](https://github.com/dmsi/identeco/actions/workflows/ci.yml/badge.svg)](https://github.com/dmsi/identeco/actions/workflows/ci.yml)
+
 # Principal design
 
 ```mermaid
@@ -162,9 +164,11 @@ serverless deploy function -f register
 
 - [x] GitHub action `ci.yml` which will: deploy `ci` stage (on dev-\* branches), run `apitest.py` and cleanup
 - [x] `apitest.py` make verbose mode optional (don't print tokens by default)
-- [ ] Add `iss` claims
-- [ ] Return appropriate HTTP status code in all cases instead of 500
+- [x] Add CI badge to the README.md
+- [ ] Add `iss` claims (default value https://github.com/dmsi/identeco)
 
 ## v0.1.4-alpha
 
 - [ ] TBD
+- [ ] Move issue token functionality to a module
+- [ ] Return appropriate HTTP status code in all cases instead of 500

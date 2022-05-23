@@ -19,6 +19,7 @@ provider:
     PRIVATE_KEY_LENGTH: 2048
     PRIVATE_KEY_LIFETIME: '30 days'
     ACCESS_TOKEN_LIFETIME: '60 minutes'
+    ISS_CLAIM: https://github.com/dmsi/identeco
 
 custom:
   usersTableArn:

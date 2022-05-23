@@ -49,6 +49,9 @@ def verifyToken(token, expected_token_use, expected_token_username):
     if claims["username"] != expected_token_username:
         raise Exception(f"verifyToken {decoded_token.claims} FAILED: unexpected username")
 
+    if claims["iss"] != "https://github.com/dmsi/identeco":
+        raise Exception(f"verifyToken {decoded_token.claims} FAILED: unexpected iss")
+
     print(f"token {decoded_token.claims} => VERIFIED")
 
 
@@ -85,6 +88,7 @@ def testRegister(should_pass):
     )
 
     print(gethttpStatus(res))
+    # if (should_pass and res.status_code != 200) or (not should_pass and res.status_code == 200):
     if should_pass:
         if res.status_code != 200: 
             raise Exception(f"testRegister returned unexpected status code: {gethttpStatus(res)}")

@@ -7,12 +7,29 @@ import jwt from 'jsonwebtoken'
 import { readS3Object } from '../s3-helpers.js'
 import helpers from '../helpers.js'
 
-function verifyToken(jwks, token) {
+function verifyRefreshToken(jwks, token) {
   const { kid, alg } = jwt.decode(token, { complete: true }).header
   const jwk = jwks.keys.find((j) => j.kid === kid)
+
+  // Decode token and verify its signature
   const decodedToken = jwt.verify(token, jwkToPem(jwk), {
     algorithms: [alg],
   })
+
+  // Verify token claims
+  if (decodedToken.token_use !== 'refresh') {
+    throw new helpers.BackendError({
+      message: `unexpected token_use claim ${decodedToken.token_use}`,
+      status: 403,
+    })
+  }
+
+  if (decodedToken.iss !== process.env.ISS_CLAIM) {
+    throw new helpers.BackendError({
+      message: `unexpected iss claim ${decodedToken.token_use}`,
+      status: 403,
+    })
+  }
 
   return decodedToken
 }
@@ -38,18 +55,13 @@ const handler = async (event) => {
     )
 
     // Verify refresh token's signature and claims
-    const decodedToken = verifyToken(jwks, refreshToken)
-    if (decodedToken.token_use !== 'refresh') {
-      throw new helpers.BackendError({
-        message: `unexpected token_use claim ${decodedToken.token_use}`,
-        status: 403,
-      })
-    }
+    const decodedToken = verifyRefreshToken(jwks, refreshToken)
 
     // Issue new access token
     const claims = {
       username: decodedToken.username,
       token_use: 'access',
+      iss: decodedToken.iss,
     }
     const options = {
       algorithm: 'RS256',

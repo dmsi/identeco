@@ -56,10 +56,12 @@ async function issueTokens(username) {
   const accessClaims = {
     username,
     token_use: 'access',
+    iss: process.env.ISS_CLAIM,
   }
   const refreshClaims = {
     username,
     token_use: 'refresh',
+    iss: process.env.ISS_CLAIM,
   }
   const options = {
     algorithm: 'RS256',
