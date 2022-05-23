@@ -12,7 +12,7 @@ inputs:
     description: AWS secret access key
     required: true
 outputs:
-  random-number:
+  api-id:
     description: 'AWS API Gateway ID'
     value: ${{ steps.api-id.outputs.api-id }}
 runs:
@@ -41,6 +41,11 @@ runs:
     #  env:
     #    AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
     #    AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+
+    # DEBUG
+    - run: |
+        echo xxx
+      shell: bash
 
     - id: api-id
       run: |
