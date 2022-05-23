@@ -49,6 +49,9 @@ runs:
             --output json                              \
             --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
       shell: bash
+      env: 
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
 
     - id: api-id
       run: |
