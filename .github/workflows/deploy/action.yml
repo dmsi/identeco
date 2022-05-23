@@ -58,6 +58,7 @@ runs:
             --stack-name identeco-${{ inputs.stage }}  \
             --output json                              \
             --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
+        echo "--- REGION:  ${{ steps.yq.outputs.aws-region }}"
         echo "+++ REGION:" $(yq '.provider.region' serverless.yml)
       shell: bash
       env: 
