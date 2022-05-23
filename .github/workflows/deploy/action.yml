@@ -21,13 +21,19 @@ runs:
     #- run: npm ci
     #  shell: bash
 
+    # TODO test without special action
+    #- name: Remove profile from serverless.yml
+    #  uses: mikefarah/yq@master
+    #  with:
+    #    cmd: |
+    #      yq -i 'del(.provider.profile)' serverless.yml
+    #      echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
+    #
     - name: Remove profile from serverless.yml
       id: yq
-      uses: mikefarah/yq@master
-      with:
-        cmd: |
-          yq -i 'del(.provider.profile)' serverless.yml
-          echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
+      run: |
+        yq -i 'del(.provider.profile)' serverless.yml
+        echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
 
     #- name: serverless deploy
     #  uses: serverless/github-action@v3
@@ -51,7 +57,6 @@ runs:
             --stack-name identeco-${{ inputs.stage }}  \
             --output json                              \
             --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]'
-        echo "--- REGION:" ${{ steps.yq.aws-region }}
         echo "+++ REGION:" $(yq '.provider.region' serverless.yml)
       shell: bash
       env: 
