@@ -78,7 +78,7 @@ runs:
       run: |
         STAGE=${{ inputs.stage }}
         REGION=$(yq '.provider.region' serverless.yml)
-        API_ID=$(aws --region $REGION cloudformation list-stack-resources  \
+        API_ID=$(aws --region $REGION cloudformation list-stack-resources   \
                      --stack-name identeco-${{ inputs.stage }}              \
                      --output json                                          \
                      --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
