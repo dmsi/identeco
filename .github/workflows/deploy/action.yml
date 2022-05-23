@@ -17,7 +17,7 @@ outputs:
     value: ${{ steps.produce-outputs.outputs.api-endpoint }}
   aws-region:
     description: AWS Region
-    value: ${{ steps.produce-outputs.outputs.aws-endpoint }}
+    value: ${{ steps.produce-outputs.outputs.aws-region }}
 runs:
   using: composite
   steps:
