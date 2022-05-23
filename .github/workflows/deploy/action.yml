@@ -34,6 +34,7 @@ runs:
       run: |
         yq -i 'del(.provider.profile)' serverless.yml
         echo "::set-output name=aws-region::$(yq '.provider.region' serverless.yml)"
+      shell: bash
 
     #- name: serverless deploy
     #  uses: serverless/github-action@v3
