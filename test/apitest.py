@@ -17,6 +17,7 @@ class State:
         self.refresh_token = None
         self.access_token = None
         self.jwks = None
+        self.verbose = 'VERBOSE' in os.environ
 
 
 def getEndpoint(path):
@@ -119,7 +120,8 @@ def testLogin(should_pass):
 
     if should_pass:
         body = res.json()
-        print("tokens:", body)
+        if state.verbose:
+            print("tokens:", body)
         state.refresh_token = body["refreshToken"]
         state.access_token = body["accessToken"]
 
@@ -155,7 +157,8 @@ def testRefresh(should_pass, token_name):
 
     if should_pass:
         body = res.json()
-        print("tokens:", body)
+        if state.verbose:
+            print("tokens:", body)
 
         # Verify issued access token
         verifyToken(body["accessToken"], "access", state.username)

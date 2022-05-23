@@ -4,13 +4,16 @@ inputs:
   stage:
     description: Stage to deploy (dev, prod, test, ...)
     required: true
-    default: prod
   aws-access-key-id:
     description: AWS access key ID
     required: true
   aws-secret-access-key:
     description: AWS secret access key
     required: true
+  node-version:
+    description: Node.js version
+    required: true
+    default: 14.x
 outputs:
   api-endpoint:
     description: API Gateway endpoint
@@ -21,6 +24,11 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ inputs.node-version }}
+
     #- run: npm ci
     #  shell: bash
 
@@ -62,7 +70,7 @@ runs:
     #    echo "--- REGION:  ${{ steps.yq.outputs.aws-region }}"
     #    echo "+++ REGION:" $(yq '.provider.region' serverless.yml)
     #  shell: bash
-    #  env: 
+    #  env:
     #    AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
     #    AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
 
@@ -78,6 +86,6 @@ runs:
         echo "::set-output name=api-endpoint::$(echo $ENDPOINT)"
         echo "::set-output name=aws-region::$(echo $REGION)"
       shell: bash
-      env: 
+      env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
