@@ -1,8 +1,16 @@
+[![CI identeco](https://github.com/dmsi/identeco/actions/workflows/ci.yml/badge.svg)](https://github.com/dmsi/identeco/actions/workflows/ci.yml)
+
 # Identeco
 
-Minimalist authentication and authorization provider implemented using AWS Lambda.
+A `hands on` project that implements a simple authentication service on `AWS Lambda`.
+The goals/requirements of the project:
 
-[![CI identeco](https://github.com/dmsi/identeco/actions/workflows/ci.yml/badge.svg)](https://github.com/dmsi/identeco/actions/workflows/ci.yml)
+- [x] Implement a service which issues JWT tokens
+- [x] It must use assymetric JWT-signing method
+- [x] It must rotate keys periodically
+- [x] It must **NOT** run at scale
+- [x] It must be deployed on `AWS Lambda` / `nodejs` runtime
+- [x] It must use CI/CD github actions
 
 # Principal design
 
@@ -170,5 +178,4 @@ serverless deploy function -f register
 ## v0.1.4-alpha
 
 - [ ] TBD
-- [ ] Move issue token functionality to a module
 - [ ] Return appropriate HTTP status code in all cases instead of 500
