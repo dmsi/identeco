@@ -8,7 +8,7 @@ The goals/requirements of the project:
 - [x] Implement a service which issues JWT tokens
 - [x] It must use assymetric JWT-signing method
 - [x] It must rotate keys periodically
-- [x] It must **NOT** run at scale
+- [x] It is **NOT** designed to run at scale
 - [x] It must be deployed on `AWS Lambda` / `nodejs` runtime
 - [x] It must use CI/CD github actions
 
