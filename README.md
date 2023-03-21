@@ -5,12 +5,12 @@
 A `hands on` project that implements a simple authentication service on `AWS Lambda`.
 The goals/requirements of the project:
 
-- [x] Implement a service which issues JWT tokens
-- [x] It must use assymetric JWT-signing method
-- [x] It must rotate keys periodically
-- [x] It is **NOT** designed to run at scale
-- [x] It must be deployed on `AWS Lambda` / `nodejs` runtime
-- [x] It must use CI/CD github actions
+-   [x] Implement a service which issues JWT tokens
+-   [x] It must use assymetric JWT-signing method
+-   [x] It must rotate keys periodically
+-   [x] It is **NOT** designed to run at scale
+-   [x] It must be deployed on `AWS Lambda` / `nodejs` runtime
+-   [x] It must use CI/CD github actions
 
 # Principal design
 
@@ -38,8 +38,8 @@ F_ROTATE --- S3
 
 # Pre-reqs
 
-- nodejs (tested on v16.15.0)
-- serverless installed globally (tested on 3.16.0)
+-   nodejs (tested on v16.15.0)
+-   serverless installed globally (tested on 3.16.0)
 
 ```sh
 npm install -g serverless
@@ -133,49 +133,51 @@ serverless deploy function -f register
 
 # Features
 
-- Registraion of username/password
-- Using assymetric RS256 JWK algorithm
-- Automatic keys rotation
-- In jwks.json keeps the previous public key as well
+-   Registraion of username/password
+-   Using assymetric RS256 JWK algorithm
+-   Automatic keys rotation
+-   In jwks.json keeps the previous public key as well
 
 # Known Issues and Limitations
 
-- In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
-- Supports only authentication (`username` claim), i.e. identeco confirms that the owner of the claim has `username`
-- No email confirmation
-- No OpenID support
+-   In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
+-   Supports only authentication (`username` claim), i.e. identeco confirms that the owner of the claim has `username`
+-   No email confirmation
+-   No OpenID support
 
 # Roadmap
 
 ## v0.1.0-alpha
 
-- [x] Add dependencies for python tests
-- [x] Replace API /rotate to cron-like scheduled event (CloudWatch)
-- [x] Replace require to EC6-style import
-- [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
+-   [x] Add dependencies for python tests
+-   [x] Replace API /rotate to cron-like scheduled event (CloudWatch)
+-   [x] Replace require to EC6-style import
+-   [x] Move towards all-camelCase (currently trying to keep variables / json fields in a snake_case, while functions are camelCase)
 
 ## v0.1.1-alpha
 
-- [x] Add configurable key length (env vars)
-- [x] Add configurable accessToken duration and keys rotation period (env vars)
-- [x] Add individual IAM roles per function (sls plugin)
-- [x] Split helpers to generic/s3/dynamodb modules
+-   [x] Add configurable key length (env vars)
+-   [x] Add configurable accessToken duration and keys rotation period (env vars)
+-   [x] Add individual IAM roles per function (sls plugin)
+-   [x] Split helpers to generic/s3/dynamodb modules
 
 ## v0.1.2-alpha
 
-- [x] Add stage name to S3 bucket `identeco-<stage>-keys` and DynamoDB table `identeco-<stage>-users`
-- [x] Implement CI/CD action when push to main branch (deploy stage `prod`)
-- [x] Fix CI/CD issue with the profile (used `yq` action in order to remove profile from `serverless.yml`)
-- [x] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
+-   [x] Add stage name to S3 bucket `identeco-<stage>-keys` and DynamoDB table `identeco-<stage>-users`
+-   [x] Implement CI/CD action when push to main branch (deploy stage `prod`)
+-   [x] Fix CI/CD issue with the profile (used `yq` action in order to remove profile from `serverless.yml`)
+-   [x] Add token_use claim `access` and `refresh` and for refresh function do not accept `access` tokens
 
 ## v0.1.3-alpha
 
-- [x] GitHub action `ci.yml` which will: deploy `ci` stage (on dev-\* branches), run `apitest.py` and cleanup
-- [x] `apitest.py` make verbose mode optional (don't print tokens by default)
-- [x] Add CI badge to the README.md
-- [x] Add `iss` claims (default value https://github.com/dmsi/identeco)
+-   [x] GitHub action `ci.yml` which will: deploy `ci` stage (on dev-\* branches), run `apitest.py` and cleanup
+-   [x] `apitest.py` make verbose mode optional (don't print tokens by default)
+-   [x] Add CI badge to the README.md
+-   [x] Add `iss` claims (default value https://github.com/dmsi/identeco)
 
 ## v0.1.4-alpha
 
-- [ ] TBD
-- [ ] Return appropriate HTTP status code in all cases instead of 500
+-   [ ] TBD
+-   [ ] Return appropriate HTTP status code in all cases instead of 500
+-   [ ] Restructure in accordance with Model-Routes-Controller-Service https://devtut.github.io/nodejs/route-controller-service-structure-for-expressjs.html#model-routes-controllers-services-directory-structure
+-   [ ] Fix security vulnerabilities
