@@ -2,40 +2,26 @@
 // Register new user.
 //
 
-import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { marshall } from '@aws-sdk/util-dynamodb'
 import bcrypt from 'bcryptjs'
-import { addUser } from '../user.js'
+import UserService from '../services/user.js'
 import helpers from '../helpers.js'
 
-const handler = async (event) => {
-  try {
-    const { username, password } = JSON.parse(event.body)
+async function handler(event) {
+    try {
+        const { username, password } = helpers.getCredentials(event)
 
-    // Check request parameters
-    if (typeof username !== 'string' || typeof password !== 'string') {
-      throw new helpers.BackendError({
-        message: 'Missing username or password',
-        status: 400,
-      })
-    }
+        await UserService.addUser({
+            username,
+            hashedPassword: await bcrypt.hash(password, 10),
+        })
 
-    // Add user to the database
-    await addUser({
-      username,
-      hashedPassword: await bcrypt.hash(password, 10),
-    })
-
-    return {
-      statusCode: 200,
+        return {
+            statusCode: 200,
+        }
+    } catch (err) {
+        console.error(err)
+        return helpers.error(err)
     }
-  } catch (err) {
-    // Error
-    console.error(err)
-    return {
-      statusCode: helpers.getStatusCode(err),
-    }
-  }
 }
 
 export { handler }

@@ -3,105 +3,46 @@
 // upon the success.
 //
 
-import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
-import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { readS3Object } from '../s3-helpers.js'
-import { getUser } from '../user.js'
 import helpers from '../helpers.js'
+import TokenService from '../services/token.js'
+import UserService from '../services/user.js'
 
-function getInput(event) {
-  const body = JSON.parse(event.body)
-  if (typeof body.username !== 'string' || typeof body.password !== 'string') {
-    throw new helpers.BackendError({
-      message: 'missing username or password',
-      status: 400,
-    })
-  }
-
-  return {
-    username: body.username,
-    password: body.password,
-  }
-}
-
+// TODO controller
 async function verifyPassword(username, password) {
-  // Query user by username
-  const user = await getUser(username)
-
-  const pwdOk = await bcrypt.compare(password, user.hashedPassword)
-  if (pwdOk !== true) {
-    throw new helpers.BackendError({
-      message: `invalid login or password for ${username}`,
-      status: 401,
-    })
-  }
+    // Compared plain text password against hashed password stored in DB
+    try {
+        const user = await UserService.getUser(username)
+        const pwdOk = await bcrypt.compare(password, user.hashedPassword)
+        if (pwdOk !== true) {
+            throw new Error()
+        }
+    } catch {
+        throw new helpers.BackendError({
+            message: `invalid login or password for ${username}`,
+            status: 401,
+        })
+    }
 }
 
-async function issueTokens(username) {
-  // Read public and private keys
-  const privateKeyPem = await readS3Object(
-    process.env.BUCKET_NAME,
-    process.env.PRIVATE_KEY_NAME
-  )
-  const jwks = JSON.parse(
-    await readS3Object(process.env.BUCKET_NAME, process.env.JWKS_JSON_NAME)
-  )
+async function handler(event) {
+    try {
+        const { username, password } = helpers.getCredentials(event)
+        console.log('username =>', username, 'password =>', password)
+        await verifyPassword(username, password)
+        const tokens = await TokenService.issue(username)
 
-  // Issue JWT tokens
-  // NOTE name convention for token_use:
-  // snake_case to make it somewhat compatible with AWS Cognito
-  // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
-  const accessClaims = {
-    username,
-    token_use: 'access',
-    iss: process.env.ISS_CLAIM,
-  }
-  const refreshClaims = {
-    username,
-    token_use: 'refresh',
-    iss: process.env.ISS_CLAIM,
-  }
-  const options = {
-    algorithm: 'RS256',
-    expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
-    keyid: jwks.keys[0].kid,
-  }
-  const accessToken = jwt.sign(accessClaims, privateKeyPem, options)
-  const refreshToken = jwt.sign(refreshClaims, privateKeyPem, {
-    ...options,
-    expiresIn: process.env.PRIVATE_KEY_LIFETIME, // sync refresh lifetime with key rotation interval
-  })
-
-  // Return tokens
-  return {
-    accessToken,
-    refreshToken,
-  }
-}
-
-const handler = async (event) => {
-  try {
-    const { username, password } = getInput(event)
-    await verifyPassword(username, password)
-    const tokens = await issueTokens(username)
-
-    // Send the response
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...tokens }),
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ...tokens }),
+        }
+    } catch (err) {
+        console.error(err)
+        return helpers.error(err)
     }
-  } catch (err) {
-    // Error
-    console.error(err)
-    return {
-      statusCode: helpers.getStatusCode(err),
-    }
-  }
 }
 
 export { handler }
