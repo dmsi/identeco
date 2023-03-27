@@ -149,7 +149,7 @@ def testLogin(expected_status_code, testcase):
 
 
 def testRefresh(expected_status_code, test_case, token_name):
-    print(f"\n--- testRefresh [{test_case}]---")
+    print(f"\n--- testRefresh [{test_case}] ---")
     if state.verbose:
         print("username:", state.username)
         print("password:", state.password)
