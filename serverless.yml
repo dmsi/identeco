@@ -1,128 +1,128 @@
 plugins:
-  - serverless-iam-roles-per-function
+    - serverless-iam-roles-per-function
 
 service: identeco
 
 frameworkVersion: '3'
 
 provider:
-  name: aws
-  region: eu-west-1
-  profile: identeco
-  runtime: nodejs14.x
-  environment:
-    TABLE_NAME: ${self:service}-${sls:stage}-users
-    BUCKET_NAME: ${self:service}-${sls:stage}-keys
-    REGION: ${self:provider.region}
-    PRIVATE_KEY_NAME: 'keypair.pem'
-    JWKS_JSON_NAME: 'jwks.json'
-    PRIVATE_KEY_LENGTH: 2048
-    PRIVATE_KEY_LIFETIME: '30 days'
-    ACCESS_TOKEN_LIFETIME: '60 minutes'
-    ISS_CLAIM: https://github.com/dmsi/identeco
+    name: aws
+    region: eu-west-1
+    profile: identeco
+    runtime: nodejs16.x
+    environment:
+        TABLE_NAME: ${self:service}-${sls:stage}-users
+        BUCKET_NAME: ${self:service}-${sls:stage}-keys
+        REGION: ${self:provider.region}
+        PRIVATE_KEY_NAME: 'keypair.pem'
+        JWKS_JSON_NAME: 'jwks.json'
+        PRIVATE_KEY_LENGTH: 2048
+        PRIVATE_KEY_LIFETIME: '30 days'
+        ACCESS_TOKEN_LIFETIME: '60 minutes'
+        ISS_CLAIM: https://github.com/dmsi/identeco
 
 custom:
-  usersTableArn:
-    Fn::GetAtt: [usersTable, Arn]
-  privateKeyObjectArn:
-    Fn::Join:
-      - '/'
-      - - Fn::GetAtt: [keysBucket, Arn]
-        - ${self:provider.environment.PRIVATE_KEY_NAME}
-  jwksObjectArn:
-    Fn::Join:
-      - '/'
-      - - Fn::GetAtt: [keysBucket, Arn]
-        - ${self:provider.environment.JWKS_JSON_NAME}
+    usersTableArn:
+        Fn::GetAtt: [usersTable, Arn]
+    privateKeyObjectArn:
+        Fn::Join:
+            - '/'
+            - - Fn::GetAtt: [keysBucket, Arn]
+              - ${self:provider.environment.PRIVATE_KEY_NAME}
+    jwksObjectArn:
+        Fn::Join:
+            - '/'
+            - - Fn::GetAtt: [keysBucket, Arn]
+              - ${self:provider.environment.JWKS_JSON_NAME}
 
 functions:
-  getJwks:
-    handler: src/handlers/getJwks.handler
-    events:
-      - http:
-          method: get
-          path: '.well-known/jwks.json'
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - s3:GetObject
-        Resource:
-          - ${self:custom.jwksObjectArn}
+    getJwks:
+        handler: src/handlers/getJwks.handler
+        events:
+            - http:
+                  method: get
+                  path: '.well-known/jwks.json'
+        iamRoleStatements:
+            - Effect: Allow
+              Action:
+                  - s3:GetObject
+              Resource:
+                  - ${self:custom.jwksObjectArn}
 
-  register:
-    handler: src/handlers/register.handler
-    events:
-      - http:
-          method: post
-          path: register
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:PutItem
-        Resource: ${self:custom.usersTableArn}
+    register:
+        handler: src/handlers/register.handler
+        events:
+            - http:
+                  method: post
+                  path: register
+        iamRoleStatements:
+            - Effect: Allow
+              Action:
+                  - dynamodb:PutItem
+              Resource: ${self:custom.usersTableArn}
 
-  login:
-    handler: src/handlers/login.handler
-    events:
-      - http:
-          method: post
-          path: login
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:GetItem
-        Resource: ${self:custom.usersTableArn}
-      - Effect: Allow
-        Action:
-          - s3:GetObject
-        Resource:
-          - ${self:custom.privateKeyObjectArn}
-          - ${self:custom.jwksObjectArn}
+    login:
+        handler: src/handlers/login.handler
+        events:
+            - http:
+                  method: post
+                  path: login
+        iamRoleStatements:
+            - Effect: Allow
+              Action:
+                  - dynamodb:GetItem
+              Resource: ${self:custom.usersTableArn}
+            - Effect: Allow
+              Action:
+                  - s3:GetObject
+              Resource:
+                  - ${self:custom.privateKeyObjectArn}
+                  - ${self:custom.jwksObjectArn}
 
-  refresh:
-    handler: src/handlers/refresh.handler
-    events:
-      - http:
-          method: get
-          path: refresh
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - s3:GetObject
-        Resource:
-          - ${self:custom.privateKeyObjectArn}
-          - ${self:custom.jwksObjectArn}
+    refresh:
+        handler: src/handlers/refresh.handler
+        events:
+            - http:
+                  method: get
+                  path: refresh
+        iamRoleStatements:
+            - Effect: Allow
+              Action:
+                  - s3:GetObject
+              Resource:
+                  - ${self:custom.privateKeyObjectArn}
+                  - ${self:custom.jwksObjectArn}
 
-  rotateKeys:
-    handler: src/handlers/rotateKeys.handler
-    events:
-      - schedule: rate(${self:provider.environment.PRIVATE_KEY_LIFETIME})
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - s3:GetObject
-          - s3:PutObject
-        Resource:
-          - ${self:custom.privateKeyObjectArn}
-          - ${self:custom.jwksObjectArn}
+    rotateKeys:
+        handler: src/handlers/rotateKeys.handler
+        events:
+            - schedule: rate(${self:provider.environment.PRIVATE_KEY_LIFETIME})
+        iamRoleStatements:
+            - Effect: Allow
+              Action:
+                  - s3:GetObject
+                  - s3:PutObject
+              Resource:
+                  - ${self:custom.privateKeyObjectArn}
+                  - ${self:custom.jwksObjectArn}
 
 resources:
-  Resources:
-    usersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.TABLE_NAME}
-        AttributeDefinitions:
-          - AttributeName: username
-            AttributeType: S
-        KeySchema:
-          - AttributeName: username
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-    keysBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:provider.environment.BUCKET_NAME}
-        AccessControl: Private
+    Resources:
+        usersTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:provider.environment.TABLE_NAME}
+                AttributeDefinitions:
+                    - AttributeName: username
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: username
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+        keysBucket:
+            Type: AWS::S3::Bucket
+            Properties:
+                BucketName: ${self:provider.environment.BUCKET_NAME}
+                AccessControl: Private

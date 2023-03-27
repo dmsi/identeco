@@ -2,30 +2,26 @@
 // Return public keys as jwks.json
 //
 
-import { readS3Object } from '../s3-helpers.js'
+import KeyService from '../services/keys.js'
 import helpers from '../helpers.js'
 
-const handler = async (event) => {
-  try {
-    const jwks = await readS3Object(
-      process.env.BUCKET_NAME,
-      process.env.JWKS_JSON_NAME
-    )
+async function handler(event) {
+    try {
+        console.log('getting jwks')
+        const jwks = await KeyService.getJwks()
+        console.log('jwks =>', jwks)
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jwks,
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jwks),
+        }
+    } catch (err) {
+        console.error(err)
+        return helpers.error(err)
     }
-  } catch (err) {
-    // Error
-    console.error(err)
-    return {
-      statusCode: 500,
-    }
-  }
 }
 
 export { handler }

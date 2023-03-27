@@ -8,7 +8,8 @@ import string
 import traceback
 import os
 import json
-
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 class State:
     def __init__(self):
@@ -18,7 +19,7 @@ class State:
         self.access_token = None
         self.jwks = None
         self.verbose = 'VERBOSE' in os.environ
-
+        self.refresh_token_mailformed = "must not work"
 
 def getEndpoint(path):
     return f"{os.environ['IDENTECO_API_ENDPOINT']}{path}"
@@ -52,77 +53,91 @@ def verifyToken(token, expected_token_use, expected_token_username):
     if claims["iss"] != "https://github.com/dmsi/identeco":
         raise Exception(f"verifyToken {decoded_token.claims} FAILED: unexpected iss")
 
-    print(f"token {decoded_token.claims} => VERIFIED")
+    if state.verbose:
+        print(f"token {decoded_token.claims} => VERIFIED")
 
 
-def testJwks():
-    print()
-    print("*** testJwks ***")
+def generateBadTokens():
+    # Generate refresh_token_bad and access_token_bad
+    # Tokens which are signed with another private key but with the same `kid`
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=1024
+    )
+    private_key_pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    key = JWK.from_pem(private_key_pem)
+    key.kid = state.jwks["keys"][0]["kid"]
+
+    refresh_claims = {
+        "username": state.username,
+        "token_use": "refresh",
+        "iss": "https://github.com/dmsi/identeco"
+    }
+    token = JWT(header={"alg": "RS256", "typ": "JWT", "kid": key.kid}, claims=refresh_claims)
+    token.make_signed_token(key)
+    state.refresh_token_bad = token.serialize()
+
+
+def testJwks(expected_status_code):
+    print("\n--- testJwks ---")
     res = requests.get(
-            url = getEndpoint("/.well-known/jwks.json"),
+        url = getEndpoint("/.well-known/jwks.json"),
     )
 
     print(gethttpStatus(res))
-    if res.status_code != 200:
-        raise Exception(f"testJwks returned unexpected status code: {gethttpStatus(res)}")
+    if res.status_code != expected_status_code:
+        raise Exception(f"testJwks returned unexpected status code: got {res.status_code}, expected {expected_status_code}")
 
     body = res.json()
-    print("jwks.json:", body)
+    if state.verbose:
+        print("jwks.json:", body)
+
     state.jwks = body
-
-    print("*** PASSED ***")
-    print()
+    generateBadTokens()
 
 
-def testRegister(should_pass):
-    print()
-    print("*** testRegister ***")
-    print("username:", state.username)
-    print("password:", state.password)
+def testRegister(expected_status_code, testcase):
+    print(f"\n--- testRegister [{testcase}] ---")
+    if state.verbose:
+        print("username:", state.username)
+        print("password:", state.password)
+
     res = requests.post(
-            url = getEndpoint("/register"),
-            json = {
-                "username": state.username,
-                "password": state.password
-            }
+        url = getEndpoint("/register"),
+        json = {
+            "username": state.username,
+            "password": state.password
+        }
     )
 
     print(gethttpStatus(res))
-    # if (should_pass and res.status_code != 200) or (not should_pass and res.status_code == 200):
-    if should_pass:
-        if res.status_code != 200: 
-            raise Exception(f"testRegister returned unexpected status code: {gethttpStatus(res)}")
-    else:
-        if res.status_code == 200: 
-            raise Exception(f"testRegister returned unexpected status code: {gethttpStatus(res)}")
-
-    print("*** PASSED ***")
-    print()
+    if res.status_code != expected_status_code:
+        raise Exception(f"testRegister returned unexpected status code: got {res.status_code}, expected {expected_status_code}")
 
 
-def testLogin(should_pass):
-    print()
-    print("*** testLogin ***")
-    print("username:", state.username)
-    print("password:", state.password)
+def testLogin(expected_status_code, testcase):
+    print(f"\n--- testLogin [{testcase}] ---")
+    if state.verbose:
+        print("username:", state.username)
+        print("password:", state.password)
+
     res = requests.post(
-            url = getEndpoint("/login"),
-            json = {
-                "username": state.username,
-                "password": state.password
-            }
+        url = getEndpoint("/login"),
+        json = {
+            "username": state.username,
+            "password": state.password
+        }
     )
 
     print(gethttpStatus(res))
+    if res.status_code != expected_status_code:
+        raise Exception(f"testLogin returned unexpected status code: got {res.status_code}, expected {expected_status_code}")
 
-    if should_pass:
-        if res.status_code != 200: 
-            raise Exception(f"testLogin returned unexpected status code: {gethttpStatus(res)}")
-    else:
-        if res.status_code == 200: 
-            raise Exception(f"testLogin returned unexpected status code: {gethttpStatus(res)}")
-
-    if should_pass:
+    if res.status_code == 200:
         body = res.json()
         if state.verbose:
             print("tokens:", body)
@@ -132,67 +147,85 @@ def testLogin(should_pass):
         verifyToken(body["accessToken"], "access", state.username)
         verifyToken(body["refreshToken"], "refresh", state.username)
 
-    print("*** PASSED ***")
-    print()
 
+def testRefresh(expected_status_code, test_case, token_name):
+    print(f"\n--- testRefresh [{test_case}] ---")
+    if state.verbose:
+        print("username:", state.username)
+        print("password:", state.password)
 
-def testRefresh(should_pass, token_name):
-    print()
-    print(f"*** testRefresh, shuld_pass: {should_pass}, token_name: {token_name} ***")
-    print("username:", state.username)
-    print("password:", state.password)
     token = getattr(state, token_name)
     res = requests.get(
-            url = getEndpoint("/refresh"),
-            headers = {
-                "Authorization": f"Bearer {token}"
-            }
+        url = getEndpoint("/refresh"),
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
     )
 
     print(gethttpStatus(res))
+    if res.status_code != expected_status_code:
+        raise Exception(f"testLogin returned unexpected status code: got {res.status_code}, expected {expected_status_code}")
 
-    if should_pass:
-        if res.status_code != 200: 
-            raise Exception(f"testRefresh returned unexpected status code: {gethttpStatus(res)}")
-    else:
-        if res.status_code == 200: 
-            raise Exception(f"testRefresh returned unexpected status code: {gethttpStatus(res)}")
-
-
-    if should_pass:
+    if res.status_code == 200:
         body = res.json()
         if state.verbose:
             print("tokens:", body)
 
-        # Verify issued access token
         verifyToken(body["accessToken"], "access", state.username)
-
-    print("*** PASSED ***")
-    print()
 
 
 state = State()
 
 def main():
     try:
-        print("...Testing myid-aws-lambda API...")
+        print("...Testing identeco AWS Lambda API...")
 
-        testJwks()
-        testRegister(should_pass = True)
-        testLogin(should_pass = True)
-        testRefresh(should_pass = True, token_name = "refresh_token")
+        # Get JWKS
+        testJwks(200)
 
-        testRefresh(should_pass = False, token_name = "access_token")
+        # Login non-registered user
+        testLogin(401, "non-registered user")
+
+        # Register new user
+        testRegister(200, "new user")
+
+        # Login registered user
+        testLogin(200, "registered user")
+
+        # Refresh tokens using 'refresh_token'
+        testRefresh(200, "with refresh token", "refresh_token")
+
+        # Refresh tokens using 'access_token'
+        testRefresh(403, "with access token", "access_token")
+
+        # Refresh tokens using 'refresh_token_bad'
+        testRefresh(403, "with bad refresh token", "refresh_token_bad")
+
+        # Refresh tokens using 'refresh_token_mailformed'
+        testRefresh(403, "with mailformed refresh token", "refresh_token_mailformed")
+
         state.password = "wrong"
-        testRegister(should_pass = False)
-        testLogin(should_pass = False)
 
-        print("****** PASSED *********")
+        # Login using wrong password
+        testLogin(401, "wrong password")
+
+        # Register existing user
+        testRegister(400, "existing user")
+
+        # Login using empty credentials
+        state.username = ""
+        state.password = ""
+        testLogin(400, "empty credentials")
+
+        # Register using empty credentials
+        testRegister(400, "empty credentials")
+
+        print("\n...PASSED...")
 
     except Exception as e:
         print("ERROR :::", e)
         traceback.print_exc()
-        print("****** FAILED *********")
+        print("\n...FAILED...")
 
 
 if __name__ == "__main__":

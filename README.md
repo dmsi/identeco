@@ -38,8 +38,8 @@ F_ROTATE --- S3
 
 # Pre-reqs
 
--   nodejs (tested on v16.15.0)
--   serverless installed globally (tested on 3.16.0)
+-   nodejs (tested on v16.19.1)
+-   serverless installed globally (tested on 3.28.1)
 
 ```sh
 npm install -g serverless
@@ -53,7 +53,7 @@ Deploy whole stack (default stage is 'dev')
 
 ```bash
 serverless deploy
-serverless invoke function -f rotateKeys
+serverless invoke -f rotateKeys
 ```
 
 > **Note** rotateKeys function is trigerred periodically by CloudWatch events but in order to
@@ -177,7 +177,9 @@ serverless deploy function -f register
 
 ## v0.1.4-alpha
 
--   [ ] TBD
--   [ ] Return appropriate HTTP status code in all cases instead of 500
--   [ ] Restructure in accordance with Model-Routes-Controller-Service https://devtut.github.io/nodejs/route-controller-service-structure-for-expressjs.html#model-routes-controllers-services-directory-structure
--   [ ] Fix security vulnerabilities
+-   [x] Refactor and separate business logic from AWS Lambda handlers.
+-   [x] Return appropriate HTTP status code in all cases instead of 500
+-   [x] Change apitest.py to check specific HTTP codes instead of `should_pass` boolean
+-   [x] Fix security vulnerabilities
+-   [x] Move to Node 16 AWS Lambda runtime
+-   [x] Update `serverless` command-line changes in the documentation (newer version)
