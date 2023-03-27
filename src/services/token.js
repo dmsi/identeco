@@ -60,14 +60,25 @@ function issueTokens(username, privateKey, jwks) {
 }
 
 function verifyToken(jwks, token, use) {
-    // Look up for the jwk
-    const { kid, alg } = jwt.decode(token, { complete: true }).header
-    const jwk = jwks.keys.find((j) => j.kid === kid)
+    let decodedToken
 
-    // Decode token and verify its signature
-    const decodedToken = jwt.verify(token, jwkToPem(jwk), {
-        algorithms: [alg],
-    })
+    // Verify token signature
+    try {
+        // Look up for the jwk
+        const { kid, alg } = jwt.decode(token, { complete: true }).header
+        const jwk = jwks.keys.find((j) => j.kid === kid)
+
+        // Decode token and verify its signature
+        decodedToken = jwt.verify(token, jwkToPem(jwk), {
+            algorithms: [alg],
+        })
+    } catch (err) {
+        console.error(err)
+        throw new helpers.BackendError({
+            message: `can't verify token ${token}`,
+            status: 403,
+        })
+    }
 
     // Verify use claim
     if (decodedToken.token_use !== use) {

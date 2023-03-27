@@ -17,9 +17,11 @@ function getCredentials(event) {
     const body = JSON.parse(event.body)
     if (
         typeof body.username !== 'string' ||
-        typeof body.password !== 'string'
+        body.username === '' ||
+        typeof body.password !== 'string' ||
+        body.password === ''
     ) {
-        throw new helpers.BackendError({
+        throw new BackendError({
             message: 'missing username or password',
             status: 400,
         })
@@ -34,7 +36,7 @@ function getCredentials(event) {
 function getRefreshToken(event) {
     const auth = event.headers['Authorization']
     if (!auth) {
-        throw new helpers.BackendError({
+        throw new BackendError({
             message: 'missing authorization token',
             status: 403,
         })

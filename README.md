@@ -181,3 +181,5 @@ serverless deploy function -f register
 -   [ ] Return appropriate HTTP status code in all cases instead of 500
 -   [ ] Restructure in accordance with Model-Routes-Controller-Service https://devtut.github.io/nodejs/route-controller-service-structure-for-expressjs.html#model-routes-controllers-services-directory-structure
 -   [ ] Fix security vulnerabilities
+-   [ ] Move to Node 16 AWS Lambda runtime
+-   [ ] Change apitest.py to check specific HTTP codes instead of should_pass boolean
