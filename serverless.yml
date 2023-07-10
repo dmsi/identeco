@@ -5,6 +5,14 @@ service: identeco
 
 frameworkVersion: '3'
 
+package:
+    individually: true
+    patterns:
+        - '!./**'
+        - ./src/**
+        - ./node_modules/**
+        - ./package*.json
+
 provider:
     name: aws
     region: eu-west-1
