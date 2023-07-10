@@ -193,3 +193,7 @@ serverless deploy function -f register
 -   [ ] Fix deprecation warnings in github actions
 -   [ ] Use serverless locally and provide `npm` scripts for deploymens
 -   [x] Change JWK `kid` calculation based of public key hash
+-   [x] Change `login`, `register` and `refresh` fields `accessToken` to `access` and `refreshToken` to `refresh`
+-   [ ] Get rid of `services`. Make storage, token and key just components.
+-   [ ] Measure times in apitest.py
+-   [ ] Use webpack to reduce lambda sizes and decrease latencies
