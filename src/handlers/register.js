@@ -2,25 +2,23 @@
 // Register new user.
 //
 
-import bcrypt from 'bcryptjs'
-import UserService from '../services/user.js'
 import helpers from '../helpers.js'
+import { newRegisterController } from '../runtime.js'
 
 async function handler(event) {
     try {
         const { username, password } = helpers.getCredentials(event)
-
-        await UserService.addUser({
-            username,
-            hashedPassword: await bcrypt.hash(password, 10),
-        })
+        const controller = newRegisterController()
+        await controller(username, password)
 
         return {
-            statusCode: 200,
+            statusCode: 204,
         }
     } catch (err) {
         console.error(err)
-        return helpers.error(err)
+        return {
+            statusCode: 400,
+        }
     }
 }
 

@@ -183,3 +183,9 @@ serverless deploy function -f register
 -   [x] Fix security vulnerabilities
 -   [x] Move to Node 16 AWS Lambda runtime
 -   [x] Update `serverless` command-line changes in the documentation (newer version)
+
+## v0.1.5-alpha
+
+-   [ ] Refactor
+-   [ ] Revisit HTTP status codes - don't provide additional information for potential attackers
+-   [ ] TBD

@@ -187,7 +187,7 @@ def main():
         testLogin(401, "non-registered user")
 
         # Register new user
-        testRegister(200, "new user")
+        testRegister(204, "new user")
 
         # Login registered user
         testLogin(200, "registered user")
@@ -196,13 +196,13 @@ def main():
         testRefresh(200, "with refresh token", "refresh_token")
 
         # Refresh tokens using 'access_token'
-        testRefresh(403, "with access token", "access_token")
+        testRefresh(401, "with access token", "access_token")
 
         # Refresh tokens using 'refresh_token_bad'
-        testRefresh(403, "with bad refresh token", "refresh_token_bad")
+        testRefresh(401, "with bad refresh token", "refresh_token_bad")
 
         # Refresh tokens using 'refresh_token_mailformed'
-        testRefresh(403, "with mailformed refresh token", "refresh_token_mailformed")
+        testRefresh(401, "with mailformed refresh token", "refresh_token_mailformed")
 
         state.password = "wrong"
 
@@ -215,7 +215,7 @@ def main():
         # Login using empty credentials
         state.username = ""
         state.password = ""
-        testLogin(400, "empty credentials")
+        testLogin(401, "empty credentials")
 
         # Register using empty credentials
         testRegister(400, "empty credentials")

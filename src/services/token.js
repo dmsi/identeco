@@ -5,7 +5,7 @@
 import jwkToPem from 'jwk-to-pem'
 import jwt from 'jsonwebtoken'
 import helpers from '../helpers.js'
-import KeyService from './keys.js'
+// import KeyService from './keys.js'
 
 // NOTE name convention for token_use:
 // snake_case to make it somewhat compatible with AWS Cognito
@@ -99,18 +99,18 @@ function verifyToken(jwks, token, use) {
     return decodedToken
 }
 
-async function issue(username) {
+async function issue(username, privateKey, jwks) {
     // Get public key id and the private key
-    const privateKey = await KeyService.getPrivateKey()
-    const jwks = await KeyService.getJwks()
+    // const privateKey = await KeyService.getPrivateKey()
+    // const jwks = await KeyService.getJwks()
 
     return issueTokens(username, privateKey, jwks)
 }
 
-async function refresh(refreshToken) {
+async function refresh(refreshToken, privateKey, jwks) {
     // Get public key id and the private key
-    const privateKey = await KeyService.getPrivateKey()
-    const jwks = await KeyService.getJwks()
+    // const privateKey = await KeyService.getPrivateKey()
+    // const jwks = await KeyService.getJwks()
 
     const decodedToken = verifyToken(jwks, refreshToken, 'refresh')
     return issueTokens(decodedToken.username, privateKey, jwks)

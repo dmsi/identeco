@@ -2,24 +2,27 @@
 // Refresh accessToken using refreshToken
 //
 
-import TokenService from '../services/token.js'
 import helpers from '../helpers.js'
+import { newRefreshController } from '../runtime.js'
 
 async function handler(event) {
     try {
         const refreshToken = helpers.getRefreshToken(event)
-        const tokens = await TokenService.refresh(refreshToken)
+        const controller = newRefreshController()
+        const body = await controller(refreshToken)
 
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(tokens),
+            body: body,
         }
     } catch (err) {
         console.error(err)
-        return helpers.error(err)
+        return {
+            statusCode: 401,
+        }
     }
 }
 
