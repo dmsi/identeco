@@ -20,7 +20,7 @@ U((user)) <===> |HTTP| API([API Gateway])
 API ----> |POST /register| F_REGISTER(register)
 API ----> |POST /login| F_LOGIN(login)
 API ----> |GET /refresh| F_REFRESH(refresh)
-API ----> |GET<br/>/.well-known/jwks.json| F_GETJWKS(getJwks)
+API ----> |GET<br/>/.well-known/jwks.json| F_GETJWKS(jwksets)
 
 %% User data %%%
 F_REGISTER --- DB[(DynamoDB<br/>users)]
@@ -32,7 +32,7 @@ F_REFRESH --- S3
 F_GETJWKS --- S3
 
 EVENT((every<br/>30 days)) ---- |event| CW([CloudWatch])
-CW ----> F_ROTATE(rotateKeys)
+CW ----> F_ROTATE(rotatekeys)
 F_ROTATE --- S3
 ```
 
@@ -145,7 +145,7 @@ serverless deploy function -f register
 -   No email confirmation
 -   No OpenID support
 
-# Roadmap
+# Changes
 
 ## v0.1.0-alpha
 
@@ -186,6 +186,10 @@ serverless deploy function -f register
 
 ## v0.1.5-alpha
 
--   [ ] Refactor
--   [ ] Revisit HTTP status codes - don't provide additional information for potential attackers
--   [ ] TBD
+-   [x] Refactor the code for better logic separations
+-   [x] Revisit HTTP status codes - don't provide additional information for potential attackers
+-   [ ] Add delete user
+-   [ ] Add update user password
+-   [ ] Fix deprecation warnings in github actions
+-   [ ] Use serverless locally and provide `npm` scripts for deploymens
+-   [x] Change JWK `kid` calculation based of public key hash

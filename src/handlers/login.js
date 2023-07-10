@@ -3,7 +3,7 @@
 // upon the success.
 //
 
-import helpers from '../helpers.js'
+import helpers from './lib/helpers.js'
 import { newLoginController } from '../runtime.js'
 
 async function handler(event) {

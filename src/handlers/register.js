@@ -2,7 +2,7 @@
 // Register new user.
 //
 
-import helpers from '../helpers.js'
+import helpers from './lib/helpers.js'
 import { newRegisterController } from '../runtime.js'
 
 async function handler(event) {

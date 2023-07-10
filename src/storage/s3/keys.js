@@ -39,27 +39,34 @@ async function writeS3Object(s3, bucket, key, body) {
 export function newS3KeysStorage(bucket, privateKeyName, jwkSetsName, config) {
     const s3 = new S3Client(config)
 
+    async function readPrivateKey() {
+        console.log(
+            `[s3] readPrivateKey bucket: ${bucket} privatekey: ${privateKeyName}`
+        )
+        return await readS3Object(s3, bucket, privateKeyName)
+    }
+
+    async function writePrivateKey(privateKey) {
+        console.log(
+            `[s3] writePrivateKey bucket: ${bucket} privatekey: ${privateKeyName}`
+        )
+        await writeS3Object(s3, bucket, privateKeyName, privateKey)
+    }
+
+    async function readJwkSets() {
+        console.log(`[s3] readJwkSets bucket: ${bucket}, jwks: ${jwkSetsName}`)
+        return await readS3Object(s3, bucket, jwkSetsName)
+    }
+
+    async function writeJwkSets(jwkSets) {
+        console.log(`[s3] writeJwkSets bucket: ${bucket}, jwks: ${jwkSetsName}`)
+        await writeS3Object(s3, bucket, jwkSetsName, jwkSets)
+    }
+
     return {
-        readPrivateKey: async function () {
-            console.log('[s3] readPrivateKey')
-            return await readS3Object(s3, bucket, privateKeyName)
-        },
-
-        writePrivateKey: async function (privateKey) {
-            console.log('[s3] writePrivateKey')
-            writeS3Object(s3, bucket, privateKeyName, privateKey)
-        },
-
-        readJwkSets: async function () {
-            console.log(
-                `[s3] readJwkSets bucket: ${bucket}, jwks: ${jwkSetsName}`
-            )
-            return await readS3Object(s3, bucket, jwkSetsName)
-        },
-
-        writeJwkSets: async function (jwkSets) {
-            console.log('[s3] writeJwkSets')
-            writeS3Object(s3, bucket, jwkSetsName, jwkSets)
-        },
+        readPrivateKey,
+        writePrivateKey,
+        readJwkSets,
+        writeJwkSets,
     }
 }

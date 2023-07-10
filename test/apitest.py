@@ -141,11 +141,11 @@ def testLogin(expected_status_code, testcase):
         body = res.json()
         if state.verbose:
             print("tokens:", body)
-        state.refresh_token = body["refreshToken"]
-        state.access_token = body["accessToken"]
+        state.refresh_token = body["refresh"]
+        state.access_token = body["access"]
 
-        verifyToken(body["accessToken"], "access", state.username)
-        verifyToken(body["refreshToken"], "refresh", state.username)
+        verifyToken(body["access"], "access", state.username)
+        verifyToken(body["refresh"], "refresh", state.username)
 
 
 def testRefresh(expected_status_code, test_case, token_name):
@@ -171,7 +171,7 @@ def testRefresh(expected_status_code, test_case, token_name):
         if state.verbose:
             print("tokens:", body)
 
-        verifyToken(body["accessToken"], "access", state.username)
+        verifyToken(body["access"], "access", state.username)
 
 
 state = State()

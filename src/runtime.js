@@ -22,11 +22,15 @@ function newUsersStorage() {
 }
 
 function newTokenService() {
-    return tokenService
+    return tokenService.newTokenService(
+        process.env.ISS_CLAIM,
+        process.env.ACCESS_TOKEN_LIFETIME,
+        process.env.PRIVATE_KEY_LIFETIME
+    )
 }
 
 function newKeyService() {
-    return keyService
+    return keyService.newKeyService(parseInt(process.env.PRIVATE_KEY_LENGTH))
 }
 
 export function newJwkSetsController() {

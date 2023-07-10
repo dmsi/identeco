@@ -2,7 +2,7 @@
 // Refresh accessToken using refreshToken
 //
 
-import helpers from '../helpers.js'
+import helpers from './lib/helpers.js'
 import { newRefreshController } from '../runtime.js'
 
 async function handler(event) {
