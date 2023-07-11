@@ -139,11 +139,9 @@ serverless deploy function -f register
 -   Registraion of username/password
 -   Using assymetric RS256 JWK algorithm
 -   Automatic keys rotation
--   In jwks.json keeps the previous public key as well
 
 # Known Issues and Limitations
 
--   In case of errors it returns 500 status code (in some situations), but we want it to return some actual error code like 401, 400, etc
 -   Supports only authentication (`username` claim), i.e. identeco confirms that the owner of the claim has `username`
 -   No email confirmation
 -   No OpenID support
@@ -191,7 +189,7 @@ serverless deploy function -f register
 
 -   [x] Refactor the code for better logic separations
 -   [x] Revisit HTTP status codes - don't provide additional information for potential attackers
--   [ ] Fix deprecation warnings in github actions
+-   [x] Fix deprecation warnings in github actions
 -   [x] Change JWK `kid` calculation based of public key hash
 -   [x] Change `login`, `register` and `refresh` fields `accessToken` to `access` and `refreshToken` to `refresh`
 -   [x] Measure times in apitest.py
