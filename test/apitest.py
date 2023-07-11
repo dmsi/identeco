@@ -8,6 +8,8 @@ import string
 import traceback
 import os
 import json
+import functools
+import time
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 
@@ -20,6 +22,7 @@ class State:
         self.jwks = None
         self.verbose = 'VERBOSE' in os.environ
         self.refresh_token_mailformed = "must not work"
+        self.total_time = 0
 
 def getEndpoint(path):
     return f"{os.environ['IDENTECO_API_ENDPOINT']}{path}"
@@ -82,6 +85,21 @@ def generateBadTokens():
     state.refresh_token_bad = token.serialize()
 
 
+def timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        value = func(*args, **kwargs)
+        end = time.perf_counter()
+        ms = round((end - start) * 1000)
+        state.total_time += ms
+        print(f'{ms}ms')
+        return value
+
+    return wrapper
+
+
+@timer
 def testJwks(expected_status_code):
     print("\n--- testJwks ---")
     res = requests.get(
@@ -100,6 +118,7 @@ def testJwks(expected_status_code):
     generateBadTokens()
 
 
+@timer
 def testRegister(expected_status_code, testcase):
     print(f"\n--- testRegister [{testcase}] ---")
     if state.verbose:
@@ -119,6 +138,7 @@ def testRegister(expected_status_code, testcase):
         raise Exception(f"testRegister returned unexpected status code: got {res.status_code}, expected {expected_status_code}")
 
 
+@timer
 def testLogin(expected_status_code, testcase):
     print(f"\n--- testLogin [{testcase}] ---")
     if state.verbose:
@@ -148,6 +168,7 @@ def testLogin(expected_status_code, testcase):
         verifyToken(body["refresh"], "refresh", state.username)
 
 
+@timer
 def testRefresh(expected_status_code, test_case, token_name):
     print(f"\n--- testRefresh [{test_case}] ---")
     if state.verbose:
@@ -221,11 +242,13 @@ def main():
         testRegister(400, "empty credentials")
 
         print("\n...PASSED...")
+        print(f'{state.total_time}ms')
 
     except Exception as e:
         print("ERROR :::", e)
         traceback.print_exc()
         print("\n...FAILED...")
+        print(f'{state.total_time}ms')
 
 
 if __name__ == "__main__":
