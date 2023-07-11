@@ -5,6 +5,14 @@ service: identeco
 
 frameworkVersion: '3'
 
+package:
+    individually: false
+    patterns:
+        - '!./**'
+        - ./src/**
+        - ./node_modules/**
+        - ./package*.json
+
 provider:
     name: aws
     region: eu-west-1
@@ -36,8 +44,8 @@ custom:
               - ${self:provider.environment.JWKS_JSON_NAME}
 
 functions:
-    getJwks:
-        handler: src/handlers/getJwks.handler
+    jwksets:
+        handler: src/handlers/jwksets.handler
         events:
             - http:
                   method: get
@@ -93,8 +101,8 @@ functions:
                   - ${self:custom.privateKeyObjectArn}
                   - ${self:custom.jwksObjectArn}
 
-    rotateKeys:
-        handler: src/handlers/rotateKeys.handler
+    rotatekeys:
+        handler: src/handlers/rotatekeys.handler
         events:
             - schedule: rate(${self:provider.environment.PRIVATE_KEY_LIFETIME})
         iamRoleStatements:

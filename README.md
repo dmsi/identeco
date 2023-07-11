@@ -20,7 +20,7 @@ U((user)) <===> |HTTP| API([API Gateway])
 API ----> |POST /register| F_REGISTER(register)
 API ----> |POST /login| F_LOGIN(login)
 API ----> |GET /refresh| F_REFRESH(refresh)
-API ----> |GET<br/>/.well-known/jwks.json| F_GETJWKS(getJwks)
+API ----> |GET<br/>/.well-known/jwks.json| F_GETJWKS(jwksets)
 
 %% User data %%%
 F_REGISTER --- DB[(DynamoDB<br/>users)]
@@ -32,7 +32,7 @@ F_REFRESH --- S3
 F_GETJWKS --- S3
 
 EVENT((every<br/>30 days)) ---- |event| CW([CloudWatch])
-CW ----> F_ROTATE(rotateKeys)
+CW ----> F_ROTATE(rotatekeys)
 F_ROTATE --- S3
 ```
 
@@ -48,6 +48,9 @@ npm install -g serverless
 # Operations
 
 ## Deploy
+
+> **Note** before you deploy change `provider.profile` to match your desired AWS profile or delete in order to use the default profile.
+> Optionally change `provider.region` to reflect region of your choice.
 
 Deploy whole stack (default stage is 'dev')
 
@@ -183,3 +186,22 @@ serverless deploy function -f register
 -   [x] Fix security vulnerabilities
 -   [x] Move to Node 16 AWS Lambda runtime
 -   [x] Update `serverless` command-line changes in the documentation (newer version)
+
+## v0.1.5-alpha
+
+-   [x] Refactor the code for better logic separations
+-   [x] Revisit HTTP status codes - don't provide additional information for potential attackers
+-   [ ] Fix deprecation warnings in github actions
+-   [x] Change JWK `kid` calculation based of public key hash
+-   [x] Change `login`, `register` and `refresh` fields `accessToken` to `access` and `refreshToken` to `refresh`
+-   [x] Measure times in apitest.py
+-   [x] ~~Use serverless locally and provide `npm` scripts for deploymens~~ No. Bloats node_modules.
+-   [x] ~~Use webpack to reduce lambda sizes and decrease latencies~~ No. Not ES6 modules friendy, hard to debug by line numbers. Cherry pick `package.patterns` instead.
+
+## v0.1.6-alpha
+
+-   [ ] Store refresh token in DB and validate in `refresh`
+-   [ ] Delete user
+-   [ ] Change user password
+-   [ ] Password validation
+-   [ ] TBD

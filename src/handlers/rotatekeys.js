@@ -5,24 +5,20 @@
 // Keeps the previous JWK keys as jwks.keys[1].
 //
 
-import helpers from '../helpers.js'
-import KeyService from '../services/keys.js'
+import { newRotateKeysController } from '../runtime.js'
 
 const handler = async (event) => {
     try {
-        console.log('updated version')
-        console.log('Rotating Keys...')
-        await KeyService.rotate()
+        const controller = newRotateKeysController()
+        await controller()
 
-        // Return OK
         return {
             statusCode: 200,
         }
     } catch (err) {
-        // Error
         console.error(err)
         return {
-            statusCode: helpers.getStatusCode(err),
+            statusCode: 500,
         }
     }
 }
