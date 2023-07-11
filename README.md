@@ -49,6 +49,9 @@ npm install -g serverless
 
 ## Deploy
 
+> **Note** before you deploy change `provider.profile` to match your desired AWS profile or delete in order to use the default profile.
+> Optionally change `provider.region` to reflect region of your choice.
+
 Deploy whole stack (default stage is 'dev')
 
 ```bash
@@ -145,7 +148,7 @@ serverless deploy function -f register
 -   No email confirmation
 -   No OpenID support
 
-# Changes
+# Roadmap
 
 ## v0.1.0-alpha
 
@@ -188,12 +191,18 @@ serverless deploy function -f register
 
 -   [x] Refactor the code for better logic separations
 -   [x] Revisit HTTP status codes - don't provide additional information for potential attackers
--   [ ] Add delete user
--   [ ] Add update user password
 -   [ ] Fix deprecation warnings in github actions
 -   [x] Change JWK `kid` calculation based of public key hash
 -   [x] Change `login`, `register` and `refresh` fields `accessToken` to `access` and `refreshToken` to `refresh`
 -   [ ] Get rid of `services`. Make storage, token and key just components.
 -   [ ] Measure times in apitest.py
--   [ ] ~~Use serverless locally and provide `npm` scripts for deploymens~~ No. Bloats node_modules.
+-   [x] ~~Use serverless locally and provide `npm` scripts for deploymens~~ No. Bloats node_modules.
 -   [x] ~~Use webpack to reduce lambda sizes and decrease latencies~~ No. Not ES6 modules friendy, hard to debug by line numbers. Cherry pick `package.patterns` instead.
+
+## v0.1.6-alpha
+
+-   [ ] Store refresh token in DB and validate in `refresh`
+-   [ ] Delete user
+-   [ ] Change user password
+-   [ ] Password validation
+-   [ ] TBD
