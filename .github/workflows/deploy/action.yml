@@ -65,8 +65,8 @@ runs:
                      --output json                                          \
                      --query 'StackResourceSummaries[?LogicalResourceId==`ApiGatewayRestApi`].PhysicalResourceId | [0]')
         ENDPOINT=https://${API_ID//\"/}.execute-api.$REGION.amazonaws.com/$STAGE
-        echo "::set-output name=api-endpoint::$(echo $ENDPOINT)"
-        echo "::set-output name=aws-region::$(echo $REGION)"
+        echo "api-endpoint=$ENDPOINT" >> $GITHUB_OUTPUT
+        echo "aws-region=$REGION" >> $GITHUB_OUTPUT
       shell: bash
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
