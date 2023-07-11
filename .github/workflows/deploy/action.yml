@@ -28,7 +28,7 @@ runs:
   using: composite
   steps:
     - name: Use Node.js ${{ inputs.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node-version }}
 
@@ -51,7 +51,7 @@ runs:
     - name: Rotate keys
       uses: serverless/github-action@v3
       with:
-        args: invoke --stage ${{ inputs.stage }} -f rotateKeys
+        args: invoke --stage ${{ inputs.stage }} -f rotatekeys
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
