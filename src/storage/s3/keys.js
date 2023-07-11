@@ -36,7 +36,7 @@ async function writeS3Object(s3, bucket, key, body) {
     )
 }
 
-export function newS3KeysStorage(bucket, privateKeyName, jwkSetsName, config) {
+export function newS3KeyStorage(bucket, privateKeyName, jwkSetsName, config) {
     const s3 = new S3Client(config)
 
     async function readPrivateKey() {

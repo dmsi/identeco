@@ -1,7 +1,7 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
-export function newDynamoDbUsersStorage(tableName, config) {
+export function newDynamoDbUserStorage(tableName, config) {
     const ddb = new DynamoDB(config)
 
     async function readUser(username) {

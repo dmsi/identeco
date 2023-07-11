@@ -1,5 +1,5 @@
 function newController(config) {
-    const { keysStorage, keyService } = config
+    const { keyStorage, keyService } = config
 
     return async function () {
         //
@@ -13,14 +13,14 @@ function newController(config) {
 
         // Retreive current key and append to jwks as the previous key
         try {
-            const current = JSON.parse(await keysStorage.readJwkSets())
+            const current = JSON.parse(await keyStorage.readJwkSets())
             jwks.keys.push(current.keys[0])
         } catch {}
 
         // Write new keys
         await Promise.all([
-            keysStorage.writeJwkSets(JSON.stringify(jwks)),
-            keysStorage.writePrivateKey(privateKeyPem),
+            keyStorage.writeJwkSets(JSON.stringify(jwks)),
+            keyStorage.writePrivateKey(privateKeyPem),
         ])
     }
 }

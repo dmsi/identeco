@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs'
 
 function newController(config) {
-    const { usersStorage } = config
+    const { userStorage } = config
 
     return async function (username, password) {
-        await usersStorage.writeUser({
+        await userStorage.writeUser({
             username,
             hash: await bcrypt.hash(password, 10),
         })

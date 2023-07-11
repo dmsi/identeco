@@ -1,9 +1,9 @@
 function newController(config) {
-    const { keysStorage, tokenService } = config
+    const { keyStorage, tokenService } = config
 
     return async function (refreshToken) {
-        const privateKey = await keysStorage.readPrivateKey()
-        const jwkSets = JSON.parse(await keysStorage.readJwkSets())
+        const privateKey = await keyStorage.readPrivateKey()
+        const jwkSets = JSON.parse(await keyStorage.readJwkSets())
         const tokens = await tokenService.refresh(
             refreshToken,
             privateKey,

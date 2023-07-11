@@ -1,8 +1,8 @@
 function newController(config) {
-    const { keysStorage } = config
+    const { keyStorage } = config
 
     return async function () {
-        const jwkSets = await keysStorage.readJwkSets()
+        const jwkSets = await keyStorage.readJwkSets()
         return jwkSets
     }
 }
