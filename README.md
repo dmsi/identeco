@@ -56,7 +56,7 @@ Deploy whole stack (default stage is 'dev')
 
 ```bash
 serverless deploy
-serverless invoke -f rotateKeys
+serverless invoke -f rotatekeys
 ```
 
 > **Note** rotateKeys function is trigerred periodically by CloudWatch events but in order to
@@ -89,7 +89,7 @@ Monitor all your API routes with Serverless Console: run "serverless --console"
 
 ### Run python test
 
-> **Note** `python3.9` with module `venv` is required
+> **Note** `python3.9+` is required. The `venv` module can be used to localize the dependencies.
 
 The following snippet can be used in order to run the tests in `bash` environment
 
@@ -98,9 +98,9 @@ cd ./test
 
 # Setup pyton venv and activate it
 python -m venv myenv
+source myenv/bin/activate
 
 # Setup python dependencies
-source myenv/bin/activate
 pip install -r requirements.txt
 
 # Run the test
@@ -198,6 +198,7 @@ serverless deploy function -f register
 
 ## v0.1.6-alpha
 
+-   [ ] Fix vulnerabilities
 -   [ ] Store refresh token in DB and validate in `refresh`
 -   [ ] Delete user
 -   [ ] Change user password
